@@ -1,0 +1,936 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/phone_icon/hacker.png">
+  <link rel="icon" href="/img/browser_icon/hacker.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="0z-sIHN">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SSRF漏洞🦂‍ 漏洞原理SSRF (Server-Side Request Forgery,服务器端请求伪造)是一种由攻击者构造请求，由服务端发起请求的安全漏洞。一般情况下，SSRF 攻击的目标是外网无法访问的内部系统(正因为请求是由服务端发起的，所以服务端能请求到与自身相连而与外网隔离的内部系统)。 SSRF 的形成大多是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="0z-sIHN 的博客">
+<meta property="og:url" content="http://example.com/2024/11/09/SSRF%E6%BC%8F%E6%B4%9E%F0%9F%A6%82/index.html">
+<meta property="og:site_name" content="0z-sIHN 的博客">
+<meta property="og:description" content="SSRF漏洞🦂‍ 漏洞原理SSRF (Server-Side Request Forgery,服务器端请求伪造)是一种由攻击者构造请求，由服务端发起请求的安全漏洞。一般情况下，SSRF 攻击的目标是外网无法访问的内部系统(正因为请求是由服务端发起的，所以服务端能请求到与自身相连而与外网隔离的内部系统)。 SSRF 的形成大多是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/image-20240406154002-bqj74km.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824163428-qsrr7on.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824181952-j75gyrv.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824182001-btvhlh6.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824182015-m6szgjy.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824182029-6gwldw0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824182147-y8n8mg4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824164431-tfdf8v7.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824164454-z56ivfa.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824164729-gecu1qx.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824164927-a5rpmsw.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165141-6ss3jeq.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165240-4lhhjqt.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165310-7vjkloy.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165336-58vd8gy.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165400-gxljh84.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165450-r1hx4vv.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165657-7k1toq5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165722-dddwm4u.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165745-b405shx.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165835-yx8f0ap.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824165946-9pwc7pd.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824170154-x5oqk9a.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824170128-q5dsw9h.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824170302-ucnrjno.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824171046-6dapbaj.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824171116-q0t3prp.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824171136-odj0h3i.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824171738-967pz0a.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824171816-rpq0ggc.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824172719-a6on9j4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824172749-k9vyekd.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824172909-vyobrn4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824174927-e3g0qnd.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175021-qdbpii1.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175037-ee8bwg6.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175108-xrb7km1.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175121-735rej6.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175259-j6vudok.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175313-os91mgt.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175328-mielh9m.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175343-ax27fh4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175401-6j3s55c.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175459-9pns2w4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175513-3fjg4ny.png">
+<meta property="og:image" content="http://example.com/assets/image-20240824175538-udg9xrq.png">
+<meta property="article:published_time" content="2024-11-09T14:39:32.981Z">
+<meta property="article:modified_time" content="2024-11-09T06:39:04.000Z">
+<meta property="article:author" content="0z-sIHN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/assets/image-20240406154002-bqj74km.png">
+  
+  
+  
+  <title>0z-sIHN 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>0z-sIHN 的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>联系我</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/essay_top_cover_bg/office.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-09 22:39" pubdate>
+          2024年11月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="SSRF漏洞🦂"><a href="#SSRF漏洞🦂" class="headerlink" title="SSRF漏洞🦂"></a>SSRF漏洞🦂</h1><p>‍</p>
+<h1 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h1><p>SSRF (Server-Side Request Forgery,服务器端请求伪造)是一种由攻击者构造请求，由<strong>服务端发起请求的安全漏洞</strong>。一般情况下，SSRF 攻击的目标是外网无法访问的内部系统(<strong>正因为请求是由服务端发起的，所以服务端能请求到与自身相连而与外网隔离的内部系统</strong>)。</p>
+<p>SSRF 的形成大多是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。</p>
+<p>​<img src="/assets/image-20240406154002-bqj74km.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h1 id="SSRF和CSRF的区别"><a href="#SSRF和CSRF的区别" class="headerlink" title="SSRF和CSRF的区别"></a>SSRF和CSRF的区别</h1><p>CSRF是服务器端没有对用户提交的数据进行随机值校验，且对http请求包内的refer字段校验不严，导致攻击者可以利用用户的cookie信息伪造用户请求发送至服务器；</p>
+<p>SSRF是服务器对用户提供的可控URL过于信任，没有对攻击者提供的URL进行地址限制和足够的检测，导致攻击者可以以此为跳板攻击内网或者其它服务器</p>
+<p>‍</p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>‍</p>
+<p>优质文章:<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/260806.html">CTF SSRF 漏洞从0到1 - FreeBuf网络安全行业门户</a></p>
+<p>‍</p>
+<h2 id="SSRF支持的协议"><a href="#SSRF支持的协议" class="headerlink" title="SSRF支持的协议"></a>SSRF支持的协议</h2><p>存在ssrf漏洞的站点主要利用四个协议</p>
+<blockquote>
+<p>http http协议拿来进行内网的ip扫描、端口探测，如果探测到6379端口，那么可以利 用http、gopher、dict这几个协议来打开放6379端口的redis服务</p>
+<p>gopher</p>
+<p>file 可以拿来进行本地文件的读取</p>
+<p>dict协议 可以拿来探测端口</p>
+</blockquote>
+<ul>
+<li><p>http:&#x2F;&#x2F; 协议  — 能进行内网端口探测-可以通过返回的时间和长度判断端口的开放。</p>
+<p>ssrf.php?url&#x3D;<a target="_blank" rel="noopener" href="http://127.0.0.1:3306/">http://127.0.0.1:3306</a></p>
+</li>
+<li><p>ftp:&#x2F;&#x2F; 协议 —</p>
+<p>ssrf.php?url&#x3D;<a href="ftp://evil.com:12345/TEST">ftp://evil.com:12345/TEST</a></p>
+</li>
+<li><p>file:&#x2F;&#x2F; 协议</p>
+<p>ssrf.php?url&#x3D;file:&#x2F;&#x2F;&#x2F;etc&#x2F;password</p>
+</li>
+<li><p>Dict:&#x2F;&#x2F; 协议</p>
+<p>dict:&#x2F;&#x2F;<user-auth>@<host>:<port>&#x2F;d:<word></p>
+<p>ssrf.php?url&#x3D;dict:&#x2F;&#x2F;attacker:11111&#x2F;</p>
+</li>
+<li><p>SFTP:&#x2F;&#x2F; 协议</p>
+<p>ssrf.php?url&#x3D;s<a href="ftp://example.com:11111/">ftp://example.com:11111/</a></p>
+</li>
+<li><p>TFTP:&#x2F;&#x2F; 协议</p>
+<p>ssrf.php?url&#x3D;t<a href="ftp://example.com:12346/TESTUDPPACKET">ftp://example.com:12346/TESTUDPPACKET</a></p>
+</li>
+<li><p>LDAP:&#x2F;&#x2F; 协议</p>
+<p>ssrf.php?url&#x3D;ldap:&#x2F;&#x2F;localhost:11211&#x2F;%0astats%0aquit</p>
+</li>
+<li><p>Gopher:&#x2F;&#x2F; 协议</p>
+<p>ssrf.php?url&#x3D;gopher:&#x2F;&#x2F;127.0.0.1:3306</p>
+</li>
+</ul>
+<p>‍</p>
+<h2 id="正反向连接"><a href="#正反向连接" class="headerlink" title="正反向连接"></a>正反向连接</h2><p>​<img src="/assets/image-20240824163428-qsrr7on.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="内网IP段"><a href="#内网IP段" class="headerlink" title="内网IP段"></a>内网IP段</h2><ul>
+<li>C类：192.168.0.0 - 192.168.255.255</li>
+<li>B类：172.16.0.0 - 172.31.255.255</li>
+<li>A类：10.0.0.0 - 10.255.255.255</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="如何测试"><a href="#如何测试" class="headerlink" title="如何测试"></a>如何测试</h1><h2 id="黑盒"><a href="#黑盒" class="headerlink" title="黑盒"></a>黑盒</h2><h3 id="SSRF和文件包含黑盒如何区分？"><a href="#SSRF和文件包含黑盒如何区分？" class="headerlink" title="SSRF和文件包含黑盒如何区分？"></a>SSRF和文件包含黑盒如何区分？</h3><blockquote>
+<p>1.分析参数关键字(url字样大概率SSRF，file字样大概率文件包含)<br>2.看参数值地址(文件包含一般只允许包含本地，看能不能包含远程地址)<br>3.分析页面响应</p>
+<p>多方面多角度分析</p>
+</blockquote>
+<p>‍</p>
+<h3 id="业务功能点："><a href="#业务功能点：" class="headerlink" title="业务功能点："></a>业务功能点：</h3><ul>
+<li>社交分享功能：获取超链接的标题等内容进行显示</li>
+<li>转码服务：通过URL地址把原地址的网页内容调优使其适合手机屏幕浏览</li>
+<li>在线翻译：给网址翻译对应网页的内容</li>
+<li>图片加载&#x2F;下载：例如富文本编辑器中的点击下载图片到本地；通过URL地址加载或下载图片</li>
+<li>图片&#x2F;文章收藏功能：主要其会取URL地址中title以及文本的内容作为显示以求一个好的用具体验</li>
+<li>云服务厂商：它会远程执行一些命令来判断网站是否存活等，所以如果可以捕获相应的信息，就可以进行ssrf测试</li>
+<li>网站采集，网站抓取的地方：一些网站会针对你输入的url进行一些信息采集工作</li>
+<li>数据库内置功能：数据库的比如mongodb的copyDatabase函数</li>
+<li>邮件系统：比如接收邮件服务器地址</li>
+<li>编码处理, 属性信息处理，文件处理：比如ffpmg，ImageMagick，docx，pdf，xml处理器等</li>
+<li>未公开的api实现以及其他扩展调用URL的功能：可以利用google 语法加上这些关键字去寻找SSRF漏洞</li>
+</ul>
+<h3 id="URL关键参数："><a href="#URL关键参数：" class="headerlink" title="URL关键参数："></a>URL关键参数：</h3><ul>
+<li>share</li>
+<li>wap</li>
+<li>url</li>
+<li>link</li>
+<li>src</li>
+<li>source</li>
+<li>target</li>
+<li>u</li>
+<li>display</li>
+<li>sourceURl</li>
+<li>imageURL</li>
+<li>domain</li>
+</ul>
+<p>‍</p>
+<h2 id="白盒"><a href="#白盒" class="headerlink" title="白盒"></a>白盒</h2><p>文件读取，加载，数据操作类的函数</p>
+<blockquote>
+<ul>
+<li>file_get_contents()：将整个文件或一个url所指向的文件读入一个字符串中。</li>
+<li>readfile()：输出一个文件的内容。</li>
+<li>fsockopen()：打开一个网络连接或者一个Unix 套接字连接。</li>
+<li>curl_exec()：初始化一个新的会话，返回一个cURL句柄，供curl_setopt()，curl_exec()和curl_close() 函数使用。</li>
+<li>fopen()：打开一个文件文件或者 URL。</li>
+<li>……</li>
+</ul>
+</blockquote>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞重点"><a href="#漏洞重点" class="headerlink" title="漏洞重点"></a>漏洞重点</h1><h2 id="伪协议利用"><a href="#伪协议利用" class="headerlink" title="伪协议利用"></a>伪协议利用</h2><ul>
+<li><p>http:&#x2F;&#x2F;</p>
+<p>Web常见访问，如<a target="_blank" rel="noopener" href="http://127.0.0.1、http//127.0.0.1:8080%E3%80%81http://192.168.1.1%E3%80%81http://192.168.1.2%E7%AD%89">http://127.0.0.1、http://127.0.0.1:8080、http://192.168.1.1、http://192.168.1.2等</a></p>
+<p>​<img src="/assets/image-20240824181952-j75gyrv.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824182001-btvhlh6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824182015-m6szgjy.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824182029-6gwldw0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>file:&#x2F;&#x2F;&#x2F;<br>从文件系统中获取文件内容，如，file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd、file:&#x2F;&#x2F;&#x2F;D:&#x2F;1.txt</p>
+<p>​<img src="/assets/image-20240824182147-y8n8mg4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>dict:&#x2F;&#x2F; （常用）<br>字典服务器协议，访问字典资源，如，dict:&#x2F;&#x2F;&#x2F;ip:6379&#x2F;info</p>
+</li>
+<li><p>gopher:&#x2F;&#x2F; （常用）<br>分布式文档传递服务，可使用gopherus生成payload<br>有部分服务是http协议不支持通讯的，那么可以用gopher来进行通讯（如mysql，redis服务等）<br>应用：漏洞利用 或 信息收集 通讯相关服务的时候 </p>
+<p>工具：<a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">Gopherus</a></p>
+</li>
+<li><p>sftp:&#x2F;&#x2F;<br>SSH文件传输协议或安全文件传输协议</p>
+</li>
+<li><p>ldap:&#x2F;&#x2F;<br>轻量级目录访问协议</p>
+</li>
+<li><p>tftp:&#x2F;&#x2F;<br>简单文件传输协议</p>
+</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h2 id="绕过方式"><a href="#绕过方式" class="headerlink" title="绕过方式"></a>绕过方式</h2><p> 禁用了127.0.0.1可以以下方法绕过</p>
+<ol>
+<li><p>10进制ip或者16进制ip</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://localhost/">http://localhost/</a></p>
+</li>
+<li><p>windows中0.0.0.0和0也是127.0.0.1 Linux中是 0</p>
+</li>
+<li><p>127。0。0。1</p>
+</li>
+<li><p>可以使用@符号来绕过 <a target="_blank" rel="noopener" href="http://a%40127.0.0.1:80@baidu.com,对于php来说hostname是bai/">http://a@127.0.0.1:80@baidu.com,对于php来说hostname是bai</a> du.com，但是对于curl来说(小于7.54.0)hostname是127.0.0.1</p>
+</li>
+<li><p>短网址</p>
+</li>
+<li><p>[::]绕过</p>
+<p> http:&#x2F;&#x2F;[:127.0.0.1:]:80</p>
+<p> http:&#x2F;&#x2F;[::]:80&#x2F;     #在liunx下可用，window测试了下不行</p>
+</li>
+<li><p>127.0.0.1写成127.1</p>
+</li>
+<li><p>http:&#x2F;&#x2F;①②⑦.⓪.⓪.①</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.00000.00000.001/</a>       #0的数量多一点少一点都没影响，最后还是会指向127.0.0.1</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://127.127.127.127/flag.php">http://127.127.127.127/flag.php</a></p>
+</li>
+<li><p>302跳转 xx.php内容</p>
+<p> url&#x3D;<a target="_blank" rel="noopener" href="http://xxx/xx.php">http://xxx/xx.php</a></p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>Location:http:<span class="hljs-comment">//127.0.0.1/flag.php&quot;);</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>‍</p>
+<p>这些域名 解析都是127.0.0.1 利用DNS解析配置来绕过</p>
+<p>safe.taobao.com</p>
+<p>114.taobao.com</p>
+<p>ecd.tencent.com</p>
+<p>wifi.aliyun.com</p>
+<p>sudo.cc</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h1><ol>
+<li>对外网、服务器所在内网、服务器本地进行端口扫描，获取一些服务的banner信息等。</li>
+<li>攻击运行在内网或服务器本地的其他应用程序，如redis、mysql等。</li>
+<li>对内网Web应用进行指纹识别，识别企业内部的资产信息。</li>
+<li>攻击内外网的Web应用，主要是使用HTTP GET&#x2F;POST请求就可以实现的攻击，如sql注入、文件上传等。</li>
+<li>利用file协议读取服务器本地文件等。</li>
+<li>进行跳板攻击等。</li>
+</ol>
+<p>‍</p>
+<h1 id="防御思路"><a href="#防御思路" class="headerlink" title="防御思路"></a>防御思路</h1><ol>
+<li>过滤返回信息，验证远程服务器对请求的响应是比较容易的方法。</li>
+<li>统一错误信息，避免用户可以根据错误信息来判断远端服务器的端口状态。</li>
+<li>限制请求的端口为http常用的端口，比如，80,443,8080,8090</li>
+<li>黑名单内网ip。避免应用被用来获取获取内网数据，攻击内网</li>
+<li>禁用不需要的协议。仅仅允许http和https请求。可以防止类似于file:&#x2F;&#x2F;&#x2F;,gopher:&#x2F;&#x2F;,ftp:&#x2F;&#x2F; 等引起的问题。</li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<h1 id="环境复现"><a href="#环境复现" class="headerlink" title="环境复现"></a>环境复现</h1><ul>
+<li><p>白盒–CTFshow</p>
+<ol>
+<li><p>web351—无过滤直接获取</p>
+<p> ​<img src="/assets/image-20240824164431-tfdf8v7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 法一：http协议</p>
+<p> ​<img src="/assets/image-20240824164454-z56ivfa.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 法二：file协议</p>
+<p> ​<img src="/assets/image-20240824164729-gecu1qx.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824164927-a5rpmsw.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web352，353—IP地址进制绕过</p>
+<p> ​<img src="/assets/image-20240824165141-6ss3jeq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824165240-4lhhjqt.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 十六进制(需要添加上0x)<br> 0x的目的是为了表示后面的数是十六进制,在编程里面一般都要加入,用来区别十进制数<br> url=<a target="_blank" rel="noopener" href="http://127.0.0.1/flag.php">http://0x7F.0.0.1/flag.php</a></p>
+<p> ​<img src="/assets/image-20240824165310-7vjkloy.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 八进制<br> url=<a target="_blank" rel="noopener" href="http://127.0.0.1/flag.php">http://0177.0.0.1/flag.php</a></p>
+<p> 10 进制全部转换<br> url=<a target="_blank" rel="noopener" href="http://127.0.0.1/flag.php">http://2130706433/flag.php</a></p>
+<p> 16 进制全部转换，还是上面那个网站转换记得前缀0x<br> url&#x3D;<a target="_blank" rel="noopener" href="http://127.0.0.1/flag.php">http://0x7F000001/flag.php</a></p>
+<p> 还有一种特殊的省略模式<br> 127.0.0.1写成127.1</p>
+<p> 用CIDR绕过localhost<br> url&#x3D;<a target="_blank" rel="noopener" href="http://127.127.127.127/flag.php">http://127.127.127.127/flag.php</a></p>
+<p> 还有很多方式<br> url&#x3D;<a target="_blank" rel="noopener" href="http://0.0.0.0/flag.php">http://0/flag.php</a><br> url&#x3D;<a target="_blank" rel="noopener" href="http://0.0.0.0/flag.php">http://0.0.0.0/flag.php</a></p>
+<p> ​<img src="/assets/image-20240824165336-58vd8gy.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824165400-gxljh84.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824165450-r1hx4vv.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web354—域名解析IP绕过</p>
+<p> test.xiaodi8.com -&gt; 127.0.0.1</p>
+<p> ​<img src="/assets/image-20240824165657-7k1toq5.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824165722-dddwm4u.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824165745-b405shx.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web355，356—长度限制IP绕过</p>
+<p> ​<img src="/assets/image-20240824165835-yx8f0ap.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web357—利用重定向解析绕过</p>
+<p> 在自己服务器上写一个重定向脚本xx.php</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">&quot;Location:http://127.0.0.1/flag.php&quot;</span>); <br>其作用是：当执行该脚本时，会直接跳转到对应的网址，即Location: 后面的网址。<br></code></pre></td></tr></table></figure>
+
+<p> ​<img src="/assets/image-20240824165946-9pwc7pd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web358—匹配且不影响写法解析</p>
+<p> ​<img src="/assets/image-20240824170154-x5oqk9a.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240824170128-q5dsw9h.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web359，web360—利用gopher协议打服务</p>
+<p> 工具地址—<a target="_blank" rel="noopener" href="https://github.com/tarunkant/Gopherus">https://github.com/tarunkant/Gopherus</a></p>
+<ul>
+<li><p>web359-mysql</p>
+<p>​<img src="/assets/image-20240824170302-ucnrjno.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824171046-6dapbaj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824171116-q0t3prp.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824171136-odj0h3i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824171738-967pz0a.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824171816-rpq0ggc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web360-redis</p>
+<p>​<img src="/assets/image-20240824172719-a6on9j4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824172749-k9vyekd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>成功写入shell</p>
+<p>​<img src="/assets/image-20240824172909-vyobrn4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824174927-e3g0qnd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>黑盒</p>
+<p>​<img src="/assets/image-20240824175021-qdbpii1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175037-ee8bwg6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>两个真实案例:</p>
+<p>​<img src="/assets/image-20240824175108-xrb7km1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175121-735rej6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>SRC(文件导出&#x2F;格式转换 SSRF)</p>
+<p>​<img src="/assets/image-20240824175259-j6vudok.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175313-os91mgt.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175328-mielh9m.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175343-ax27fh4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175401-6j3s55c.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175459-9pns2w4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175513-3fjg4ny.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240824175538-udg9xrq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ul>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2024/11/09/SSRF漏洞🦂/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>0z-sIHN</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/09/XSS%E6%BC%8F%E6%B4%9E%F0%9F%A6%A0/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/09/RCE%E6%BC%8F%E6%B4%9E%F0%9F%90%9B/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

