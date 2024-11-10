@@ -34,6 +34,8 @@
 <meta name="twitter:image" content="http://example.com/img/essay_cover_img/xss.png">
   
   
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
   
   <title>XSS漏洞🦠 - 0z-sIHN 的博客</title>
 
@@ -823,21 +825,15 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/03/26/CSRF%E6%BC%8F%E6%B4%9E%F0%9F%91%BE/" title="CSRF漏洞👾">
+                      <a href="/2024/03/26/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%F0%9F%95%B7%EF%B8%8F/" title="SQL注入漏洞🕷️">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">CSRF漏洞👾</span>
+                        <span class="hidden-mobile">SQL注入漏洞🕷️</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/2024/03/26/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%F0%9F%95%B7%EF%B8%8F/" title="SQL注入漏洞🕷️">
-                        <span class="hidden-mobile">SQL注入漏洞🕷️</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>
@@ -949,11 +945,69 @@
 
   <footer>
     <div class="footer-inner">
+<div>
+  <span id="timeDate">正在载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("08/17/2020 00:00:00");
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀已持续航行&nbsp"+dnum+"&nbsp天";  
+      document.getElementById("times").innerHTML = hnum + "&nbsp时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()",250);
+  </script>
+</div>
+
   
     <div class="footer-content">
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1099,6 +1153,8 @@
   <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 
