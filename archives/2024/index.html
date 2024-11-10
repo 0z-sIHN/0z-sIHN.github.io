@@ -61,7 +61,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":1},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -87,7 +87,7 @@
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
-      <strong>0z-sIHN 的博客</strong>
+      <strong>0z-sIHN Blog</strong>
     </a>
 
     <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
@@ -183,7 +183,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/gd_bg/14.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -217,7 +217,7 @@
                 
 
 <div class="list-group">
-  <p class="h4">共计 10 篇文章</p>
+  <p class="h4">共计 19 篇文章</p>
   <hr>
   
   
@@ -225,67 +225,73 @@
       
       <p class="h5">2024</p>
     
-    <a href="/2024/11/09/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%F0%9F%93%A1/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
-    </a>
-  
-    
-    <a href="/2024/11/09/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%F0%9F%92%BC/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
-    </a>
-  
-    
-    <a href="/2024/11/09/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%F0%9F%A6%87/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
-    </a>
-  
-    
-    <a href="/2024/11/09/XXE%E6%BC%8F%E6%B4%9E%F0%9F%A6%8B/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
-    </a>
-  
-    
-    <a href="/2024/11/09/XSS%E6%BC%8F%E6%B4%9E%F0%9F%A6%A0/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
-    </a>
-  
-    
     <a href="/2024/11/09/SSRF%E6%BC%8F%E6%B4%9E%F0%9F%A6%82/" class="list-group-item list-group-item-action">
       <time>11-09</time>
-      <div class="list-group-item-title"></div>
+      <div class="list-group-item-title">SSRF漏洞🦂</div>
     </a>
   
     
-    <a href="/2024/11/09/RCE%E6%BC%8F%E6%B4%9E%F0%9F%90%9B/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
+    <a href="/2024/11/01/%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0/" class="list-group-item list-group-item-action">
+      <time>11-01</time>
+      <div class="list-group-item-title">漏洞发现</div>
     </a>
   
     
-    <a href="/2024/11/09/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%F0%9F%95%B7%EF%B8%8F/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
+    <a href="/2024/10/01/%E7%B3%BB%E7%BB%9F%E6%94%BB%E9%98%B2/" class="list-group-item list-group-item-action">
+      <time>10-01</time>
+      <div class="list-group-item-title">系统攻防</div>
     </a>
   
     
-    <a href="/2024/11/09/CSRF%E6%BC%8F%E6%B4%9E%F0%9F%91%BE/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title"></div>
+    <a href="/2024/09/30/API%E6%94%BB%E9%98%B2/" class="list-group-item list-group-item-action">
+      <time>09-30</time>
+      <div class="list-group-item-title">API攻防</div>
     </a>
   
     
-    <a href="/2024/11/09/hello-world/" class="list-group-item list-group-item-action">
-      <time>11-09</time>
-      <div class="list-group-item-title">Hello World</div>
+    <a href="/2024/09/30/%E4%BA%91%E4%B8%8A%E6%94%BB%E9%98%B2/" class="list-group-item list-group-item-action">
+      <time>09-30</time>
+      <div class="list-group-item-title">云上攻防</div>
+    </a>
+  
+    
+    <a href="/2024/09/15/APP%E6%94%BB%E9%98%B2/" class="list-group-item list-group-item-action">
+      <time>09-15</time>
+      <div class="list-group-item-title">APP攻防</div>
+    </a>
+  
+    
+    <a href="/2024/09/05/%E6%9C%8D%E5%8A%A1%E6%94%BB%E9%98%B2/" class="list-group-item list-group-item-action">
+      <time>09-05</time>
+      <div class="list-group-item-title">服务攻防</div>
+    </a>
+  
+    
+    <a href="/2024/08/05/%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91/" class="list-group-item list-group-item-action">
+      <time>08-05</time>
+      <div class="list-group-item-title">业务逻辑</div>
+    </a>
+  
+    
+    <a href="/2024/07/05/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/" class="list-group-item list-group-item-action">
+      <time>07-05</time>
+      <div class="list-group-item-title">安全开发🧩</div>
+    </a>
+  
+    
+    <a href="/2024/06/30/%E4%BF%A1%E6%81%AF%E6%89%93%E7%82%B9/" class="list-group-item list-group-item-action">
+      <time>06-30</time>
+      <div class="list-group-item-title">信息打点🧐</div>
     </a>
   
 </div>
 
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <span class="page-number current">1</span><a class="page-number" href="/archives/2024/page/2/#board">2</a><a class="extend next" rel="next" href="/archives/2024/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
 
 
 
