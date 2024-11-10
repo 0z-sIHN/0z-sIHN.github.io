@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/essay_cover_img/xss.png">
 <meta property="article:published_time" content="2024-03-26T13:31:43.000Z">
-<meta property="article:modified_time" content="2024-11-10T08:54:14.643Z">
+<meta property="article:modified_time" content="2024-11-10T13:05:35.700Z">
 <meta property="article:author" content="0z-sIHN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/essay_cover_img/xss.png">
@@ -316,7 +316,7 @@
 </li>
 <li><p>利用嵌套js格式，生成嵌套网址：192.168.137.1:84&#x2F;xss.php?x&#x3D;<iframe src="http://www.xiaodi8.com">test</iframe></p>
 </li>
-<li><p>如果这段代码被插入到一个网页中，并且该网页的用户受到攻击者的控制，那么该用户的浏览器将加载 <a target="_blank" rel="noopener" href="http://www.xiaodi8.com/">http://www.xiaodi8.com</a> 这个地址，并在页面中嵌入一个 <iframe> 元素，显示该地址的内容。</p>
+<li><p>如果这段代码被插入到一个网页中，并且该网页的用户受到攻击者的控制，那么该用户的浏览器将加载 <a target="_blank" rel="noopener" href="http://www.xiaodi8.com/">http://www.xiaodi8.com</a> 这个地址，并在页面中嵌入一个 &lt;&#x2F;iframe&#x2F;&gt; 元素，显示该地址的内容。</p>
 <p> <img src="/assets/image-20240804161250-yrdqiwe.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
 </li>
 <li><p>那么就可能导致跨站脚本攻击。攻击者可能会尝试利用这种方式来窃取用户的信息、劫持用户会话，或者进行其他恶意活动。</p>
@@ -577,7 +577,7 @@
  <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;scr&lt;script&gt;ipt&gt;<span class="hljs-title function_ invoke__">alert</span>(<span class="hljs-string">&#x27;wuhu&#x27;</span>)&lt;/script&gt;<br>&lt;s&lt;script&gt;cript&gt;<span class="hljs-title function_ invoke__">alert</span>(<span class="hljs-string">&#x27;wuhu&#x27;</span>)&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
 <p> 方法三：</p>
-<p> 使用非<script>的<a target="_blank" rel="noopener" href="https://blog.csdn.net/mikebarton/article/details/103183559?ops_request_misc=&request_id=&biz_id=102&utm_term=body%E6%A0%87%E7%AD%BE%E5%BA%94%E7%94%A8%E5%88%B0xss&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-103183559.142%5Ev100%5Epc_search_result_base9&spm=1018.2226.3001.4449">其他标签</a></p>
+<p> 使用非<code>&lt;script&gt;</code>的<a target="_blank" rel="noopener" href="https://blog.csdn.net/mikebarton/article/details/103183559?ops_request_misc=&request_id=&biz_id=102&utm_term=body%E6%A0%87%E7%AD%BE%E5%BA%94%E7%94%A8%E5%88%B0xss&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-103183559.142%5Ev100%5Epc_search_result_base9&spm=1018.2226.3001.4449">其他标签</a></p>
  <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;img src=<span class="hljs-number">1</span> onerror=<span class="hljs-string">&#x27;alert(&quot;wuhu&quot;)&#x27;</span>&gt;<br></code></pre></td></tr></table></figure>
 
 <h4 id="High级别"><a href="#High级别" class="headerlink" title="High级别"></a>High级别</h4><p> 源码：</p>
@@ -589,13 +589,13 @@
 <p> 这里输入<code>&lt;iframe srcdoc=&quot;&lt;img src=x onerror=alert(&#39;wuhu&#39;)&gt;&quot;&gt;&lt;/iframe&gt;</code>​</p>
 <p> <img src="/assets/image-20240408202258-rrsc1vu.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
 <h3 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h3><p> js代码不在某个参数中，而是被写进了数据库或文件可以永久保存数据的介质中，如留言板等。</p>
-<p> 数据流量：浏览器—>后端—>数据库—>后端—>浏览器</p>
+<p> 数据流量：浏览器—&gt;后端—&gt;数据库—&gt;后端—&gt;浏览器</p>
 <h4 id="Low级别-1"><a href="#Low级别-1" class="headerlink" title="Low级别"></a>Low级别</h4><p> 源码：</p>
  <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;btnSign&#x27;</span> ] ) ) &#123;<br>    <span class="hljs-comment">// Get input</span><br>    <span class="hljs-variable">$message</span> = <span class="hljs-title function_ invoke__">trim</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;mtxMessage&#x27;</span> ] );<br>    <span class="hljs-variable">$name</span>    = <span class="hljs-title function_ invoke__">trim</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;txtName&#x27;</span> ] );<br><br>    <span class="hljs-comment">// Sanitize message input</span><br>    <span class="hljs-variable">$message</span> = <span class="hljs-title function_ invoke__">stripslashes</span>( <span class="hljs-variable">$message</span> );<br>    <span class="hljs-variable">$message</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$message</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br><br>    <span class="hljs-comment">// Sanitize name input</span><br>    <span class="hljs-variable">$name</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$name</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br><br>    <span class="hljs-comment">// Update database</span><br>    <span class="hljs-variable">$query</span>  = <span class="hljs-string">&quot;INSERT INTO guestbook ( comment, name ) VALUES ( &#x27;<span class="hljs-subst">$message</span>&#x27;, &#x27;<span class="hljs-subst">$name</span>&#x27; );&quot;</span>;<br>    <span class="hljs-variable">$result</span> = <span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$query</span> ) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span>( <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_connect_error</span>()) ? <span class="hljs-variable">$___mysqli_res</span> : <span class="hljs-literal">false</span>)) . <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span> );<br><br>    <span class="hljs-comment">//mysql_close();</span><br>&#125;<br><br><span class="hljs-meta">?&gt;</span> <br></code></pre></td></tr></table></figure>
 
 <ul>
 <li><code>trim(string,charlist)</code>​ ：移除字符串两侧的空白字符或其他预定义字符</li>
-<li><code>stripslashes(string)</code>​： 删除反斜杠"/"</li>
+<li><code>stripslashes(string)</code>​： 删除反斜杠”&#x2F;“</li>
 <li><code>mysqli_real_escape_string(string,connection)</code>​ ：函数会对字符串string中的特殊符号（<code>\x00</code>​，<code>\n</code>​，<code>\r</code>​，<code>\</code>​，<code>&#39;</code>​，<code>&quot;</code>​，<code>\x1a</code>​）进行转义。</li>
 </ul>
 <p> Message处输入<code>&lt;script&gt;alert(&#39;芜湖&#39;)&lt;/script&gt;</code>​</p>
@@ -823,15 +823,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/03/26/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%F0%9F%95%B7%EF%B8%8F/" title="SQL注入漏洞🕷️">
+                      <a href="/2024/03/26/CSRF%E6%BC%8F%E6%B4%9E%F0%9F%91%BE/" title="CSRF漏洞👾">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SQL注入漏洞🕷️</span>
+                        <span class="hidden-mobile">CSRF漏洞👾</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2024/03/26/SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%F0%9F%95%B7%EF%B8%8F/" title="SQL注入漏洞🕷️">
+                        <span class="hidden-mobile">SQL注入漏洞🕷️</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
