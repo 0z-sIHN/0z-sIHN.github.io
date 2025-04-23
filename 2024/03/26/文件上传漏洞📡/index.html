@@ -1,0 +1,1291 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/phone_icon/hacker.png">
+  <link rel="icon" href="/img/browser_icon/hacker.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="0z-sIHN">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="相关优质好文：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;backlion&#x2F;p&#x2F;13083120.html 优质文档P95-P132​渗透测试手册WEB安全漏洞.pdf 漏洞原理文件上传漏洞是指由于程序员在对用户文件上传部分的控制不足或者处理缺陷，而导致的用户可以越过其本身权限向服务器上上传可执行的动态脚本文件。这里上传的文件可以是木马，病毒，恶意脚本或者WebShell等。 “文件上传”本身">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件上传漏洞">
+<meta property="og:url" content="http://example.com/2024/03/26/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%F0%9F%93%A1/index.html">
+<meta property="og:site_name" content="0z-sIHN 的博客">
+<meta property="og:description" content="相关优质好文：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;backlion&#x2F;p&#x2F;13083120.html 优质文档P95-P132​渗透测试手册WEB安全漏洞.pdf 漏洞原理文件上传漏洞是指由于程序员在对用户文件上传部分的控制不足或者处理缺陷，而导致的用户可以越过其本身权限向服务器上上传可执行的动态脚本文件。这里上传的文件可以是木马，病毒，恶意脚本或者WebShell等。 “文件上传”本身">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/essay_cover_img/upload.png">
+<meta property="article:published_time" content="2024-03-26T13:39:17.000Z">
+<meta property="article:modified_time" content="2024-11-10T14:44:38.091Z">
+<meta property="article:author" content="0z-sIHN">
+<meta property="article:tag" content="WEB攻防">
+<meta property="article:tag" content="文件上传漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/essay_cover_img/upload.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>文件上传漏洞 - 0z-sIHN 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":1},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>0z-sIHN Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>联系我</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/essay_top_cover_bg/office.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="文件上传漏洞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-26 21:39" pubdate>
+          2024年3月26日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          48 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">文件上传漏洞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>相关优质好文：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/backlion/p/13083120.html">https://www.cnblogs.com/backlion/p/13083120.html</a></p>
+<p>优质文档P<sub>95</sub>-P<sub>132</sub>​<a href="assets/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%89%8B%E5%86%8CWEB%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-20240402220003-43iej8v.pdf">渗透测试手册WEB安全漏洞.pdf</a></p>
+<h1 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h1><p>文件上传漏洞是指由于程序员在对用户文件上传部分的控制不足或者处理缺陷，而导致的用户可以越过其本身权限向服务器上上传可执行的动态脚本文件。这里上传的文件可以是木马，病毒，恶意脚本或者WebShell等。 <strong>“文件上传”本身没有问题，有问题的是文件上传后，</strong>​**&#x3D;&#x3D;服务器怎么处理、解释文件&#x3D;&#x3D;**​ <strong>。</strong> 如果服务器的处理逻辑做的不够安全，则会导致严重的后果。</p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>上传文件检测流程</p>
+<p><img src="/assets/image-20240402205208-8b7prc0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<ul>
+<li><p>服务端校验</p>
+<ul>
+<li>文件头content-type字段校验（image&#x2F;gif）</li>
+<li>文件内容头校验（GIF89a）</li>
+<li>目录路经检测（检测跟Path参数相关的内容）</li>
+<li>文件扩展名检测 (检测跟文件 extension 相关的内容)</li>
+<li>后缀名黑名单校验</li>
+<li>后缀名白名单校验</li>
+<li>自定义正则校验</li>
+</ul>
+</li>
+<li><p>WAF设备校验（根据不同的WAF产品而定）</p>
+</li>
+</ul>
+<p>‍</p>
+<p>漏洞产生原因有哪些？</p>
+<ol>
+<li><p>服务器配置不当</p>
+</li>
+<li><p>开源编辑器上传漏洞</p>
+</li>
+<li><p>本地文件上传限制被绕过</p>
+</li>
+<li><p>过滤不严或被绕过</p>
+</li>
+<li><p>文件解析漏洞导致文件执行</p>
+</li>
+<li><p>文件路径截断</p>
+</li>
+</ol>
+<p>‍</p>
+<p>漏洞满足条件是什么？</p>
+<ul>
+<li><p>上传的文件能够被Web容器解释执行（即文件上传后所在目录得是Web容器所覆盖到的路径）</p>
+</li>
+<li><p>用户能够从Web上访问这个文件</p>
+</li>
+</ul>
+<h1 id="如何测试"><a href="#如何测试" class="headerlink" title="如何测试"></a>如何测试</h1><h2 id="黑盒"><a href="#黑盒" class="headerlink" title="黑盒"></a>黑盒</h2><h2 id="白盒"><a href="#白盒" class="headerlink" title="白盒"></a>白盒</h2><h1 id="漏洞的攻击和防御方式"><a href="#漏洞的攻击和防御方式" class="headerlink" title="漏洞的攻击和防御方式"></a>漏洞的攻击和防御方式</h1><h2 id="前端限制"><a href="#前端限制" class="headerlink" title="前端限制"></a>前端限制</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><pre><code class="hljs">    **在表单中使用**​`onsumbit=checkFile()`​**调用js函数来检查上传文件的扩展名。当用户在客户端选择文件点击上传的时候，客户端还没有向服务器发送任何消息，就对本地文件进行检测来判断是否是可以上传的类型，这种方式称为前台脚本检测扩展名。**
+</code></pre>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;li id=<span class="hljs-string">&quot;show_code&quot;</span>&gt;<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>代码<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">pre</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">code</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;line-numbers language-javascript&quot;</span>&gt;</span>function checkFile() &#123;</span><br><span class="language-xml">    var file = document.getElementsByName(&#x27;upload_file&#x27;)[0].value;</span><br><span class="language-xml">    if (file == null || file == &quot;&quot;) &#123;</span><br><span class="language-xml">        alert(&quot;请选择要上传的文件!&quot;);</span><br><span class="language-xml">        return false;</span><br><span class="language-xml">    &#125;</span><br><span class="language-xml">    //定义允许上传的文件类型</span><br><span class="language-xml">    var allow_ext = &quot;.jpg|.png|.gif&quot;;</span><br><span class="language-xml">    //提取上传文件的类型</span><br><span class="language-xml">    var ext_name = file.substring(file.lastIndexOf(&quot;.&quot;));</span><br><span class="language-xml">    //判断上传文件类型是否允许上传</span><br><span class="language-xml">    if (allow_ext.indexOf(ext_name + &quot;|&quot;) == -1) &#123;</span><br><span class="language-xml">        var errMsg = &quot;该文件不允许上传，请上传&quot; + allow_ext + &quot;类型的文件,当前文件类型为：&quot; + ext_name;</span><br><span class="language-xml">        alert(errMsg);</span><br><span class="language-xml">        return false;</span><br><span class="language-xml">    &#125;</span><br><span class="language-xml">&#125;</span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">code</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span></span><br>&lt;/li&gt;<br></code></pre></td></tr></table></figure>
+
+<h3 id="绕过方法"><a href="#绕过方法" class="headerlink" title="绕过方法"></a>绕过方法</h3><ol>
+<li><p>通过火狐插件NOscript插件或者在搜索栏输入<code>about:config</code>​禁用IE中JS脚本</p>
+</li>
+<li><p>通过firebug插件元素审核修改代码，也可以直接F12修改（如删除onsubm:t&#x3D;”return checkFile()”事件）</p>
+</li>
+<li><p>通过firebug元素审核javascirpt脚本中添加上传文件类型。</p>
+</li>
+<li><p>通过利用burp抓包改包，先上传一个gif类型的木马，然后通过burp将其改为asp&#x2F;php&#x2F;jsp后缀名即可</p>
+</li>
+</ol>
+<p><strong>注意</strong>：这里修改文件名字后，请求头中的<code>Content-Length</code>​的值也要改</p>
+<h2 id="黑白名单"><a href="#黑白名单" class="headerlink" title="黑白名单"></a>黑白名单</h2><p><strong>就是在文件被上传到服务端的时候，对于文件名的扩展名进行检查，如果不合法，则拒绝这次上传</strong><br>在检查扩展名是否合法的时候，有两种策略：</p>
+<h3 id="黑名单过滤"><a href="#黑名单过滤" class="headerlink" title="黑名单过滤"></a>黑名单过滤</h3><h4 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h4><p>文件扩展名在黑名单中的为不合法</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">//黑名单策略</span><br>&lt;li id=<span class="hljs-string">&quot;show_code&quot;</span>&gt;<br>    &lt;h3&gt;代码&lt;/h3&gt;<br>&lt;pre&gt;<br>&lt;code <span class="hljs-class"><span class="hljs-keyword">class</span>=&quot;<span class="hljs-title">line</span>-<span class="hljs-title">numbers</span> <span class="hljs-title">language</span>-<span class="hljs-title">php</span>&quot;&gt;$<span class="hljs-title">is_upload</span> = <span class="hljs-title">false</span>;</span><br><span class="hljs-class">$<span class="hljs-title">msg</span> = <span class="hljs-title">null</span>;</span><br><span class="hljs-class"><span class="hljs-title">if</span> (<span class="hljs-title">isset</span>($<span class="hljs-title">_POST</span>[&#x27;<span class="hljs-title">submit</span>&#x27;])) </span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">file_exists</span>(UPLOAD_PATH)) &#123;<br>        <span class="hljs-variable">$deny_ext</span> = <span class="hljs-keyword">array</span>(<span class="hljs-string">&#x27;.asp&#x27;</span>,<span class="hljs-string">&#x27;.aspx&#x27;</span>,<span class="hljs-string">&#x27;.php&#x27;</span>,<span class="hljs-string">&#x27;.jsp&#x27;</span>);<br>        <span class="hljs-variable">$file_name</span> = <span class="hljs-title function_ invoke__">trim</span>(<span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;upload_file&#x27;</span>][<span class="hljs-string">&#x27;name&#x27;</span>]);<br>        <span class="hljs-variable">$file_name</span> = <span class="hljs-title function_ invoke__">deldot</span>(<span class="hljs-variable">$file_name</span>);<span class="hljs-comment">//删除文件名末尾的点</span><br>        <span class="hljs-variable">$file_ext</span> = <span class="hljs-title function_ invoke__">strrchr</span>(<span class="hljs-variable">$file_name</span>, <span class="hljs-string">&#x27;.&#x27;</span>);<br>        <span class="hljs-variable">$file_ext</span> = <span class="hljs-title function_ invoke__">strtolower</span>(<span class="hljs-variable">$file_ext</span>); <span class="hljs-comment">//转换为小写</span><br>        <span class="hljs-variable">$file_ext</span> = <span class="hljs-title function_ invoke__">str_ireplace</span>(<span class="hljs-string">&#x27;::$DATA&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-variable">$file_ext</span>);<span class="hljs-comment">//去除字符串::$DATA</span><br>        <span class="hljs-variable">$file_ext</span> = <span class="hljs-title function_ invoke__">trim</span>(<span class="hljs-variable">$file_ext</span>); <span class="hljs-comment">//收尾去空</span><br><br>        <span class="hljs-keyword">if</span>(!<span class="hljs-title function_ invoke__">in_array</span>(<span class="hljs-variable">$file_ext</span>, <span class="hljs-variable">$deny_ext</span>)) &#123;<br>            <span class="hljs-variable">$temp_file</span> = <span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;upload_file&#x27;</span>][<span class="hljs-string">&#x27;tmp_name&#x27;</span>];<br>            <span class="hljs-variable">$img_path</span> = UPLOAD_PATH.<span class="hljs-string">&#x27;/&#x27;</span>.<span class="hljs-title function_ invoke__">date</span>(<span class="hljs-string">&quot;YmdHis&quot;</span>).<span class="hljs-title function_ invoke__">rand</span>(<span class="hljs-number">1000</span>,<span class="hljs-number">9999</span>).<span class="hljs-variable">$file_ext</span>;          <br>            <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">move_uploaded_file</span>(<span class="hljs-variable">$temp_file</span>,<span class="hljs-variable">$img_path</span>)) &#123;<br>                 <span class="hljs-variable">$is_upload</span> = <span class="hljs-literal">true</span>;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-variable">$msg</span> = <span class="hljs-string">&#x27;上传出错！&#x27;</span>;<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-variable">$msg</span> = <span class="hljs-string">&#x27;不允许上传.asp,.aspx,.php,.jsp后缀文件！&#x27;</span>;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$msg</span> = UPLOAD_PATH . <span class="hljs-string">&#x27;文件夹不存在,请手工创建！&#x27;</span>;<br>    &#125;<br>&#125;<br>&lt;/code&gt;<br>&lt;/pre&gt;<br>&lt;/li&gt;<br></code></pre></td></tr></table></figure>
+
+<h4 id="绕过方法-1"><a href="#绕过方法-1" class="headerlink" title="绕过方法"></a>绕过方法</h4><blockquote>
+<p>Web系统可能会采用黑名单的方式进行过滤。而过滤的方式存在一定的缺陷，比如存在过滤的黑名单不全，未考虑大小写，以及要上传文件的名称存在敏感字符。</p>
+<p>基于黑名单验证：只针对黑名单中没有的后缀名，文件才能上传成功。</p>
+<p>使用黑名单过滤方式,肯定会存在缺陷;【对上传文件名称进行敏感字符清除。】</p>
+</blockquote>
+<p>‍</p>
+<p>‍</p>
+<h5 id="特殊解析后缀"><a href="#特殊解析后缀" class="headerlink" title="特殊解析后缀"></a>特殊解析后缀</h5><p>很多语言都存在，有多个可以解析后缀。当目标站点采用黑名单时，往往包含不全面;</p>
+<p>例如:</p>
+<table>
+<thead>
+<tr>
+<th align="center">语言</th>
+<th align="center">默认(服务器)可解析后缀</th>
+<th align="center">盲猜绕过可解析后缀</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">asp.net</td>
+<td align="center">【IIS】</td>
+<td align="center">asp,aspx,asa,asax,ascx,ashx,asmx,cer,aSp,aSpx,aSa,aSax,aScx,aShx,aSmx,cEr</td>
+</tr>
+<tr>
+<td align="center">php</td>
+<td align="center">​<code>.php .html .htm</code>​【apache】</td>
+<td align="center">php,php5,php4,php3,php2,pHp,pHp5,pHp4,pHp3,pHp2,html,htm,phtml,pht,Html,Htm,pHtml</td>
+</tr>
+<tr>
+<td align="center">jsp</td>
+<td align="center">​<code>*.jsp</code>​,<code>*.jspx</code>​【tomcat】</td>
+<td align="center">jsp,jspa,jspx,jsw,jsv,jspf,jtml,jSp,jSpx,jSpa,jSw,jSv,jSpf,jHtml</td>
+</tr>
+</tbody></table>
+<p>Tomcat添加可解析后缀名:</p>
+<ul>
+<li><p>路径: apache-tomcat-x.x.x\conf\web.xml</p>
+</li>
+<li><p>文件: web.xml</p>
+</li>
+<li><p>修改位置: <code>&lt;url-pattern&gt;.&lt;/url-pattern&gt;</code>​</p>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml">  <span class="hljs-tag">&lt;<span class="hljs-name">servlet-mapping</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">servlet-name</span>&gt;</span>jsp<span class="hljs-tag">&lt;/<span class="hljs-name">servlet-name</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>*.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>*.jspx<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">servlet-mapping</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>Apache添加可解析后缀名</p>
+<ul>
+<li><p>路径：Apache24\conf\httpd.conf</p>
+</li>
+<li><p>文件：httpd.conf</p>
+</li>
+<li><p>修改位置：<code>AddType</code>​ <code>application/x-httpd-php</code>​ <code>.php</code>​ <code>.html</code>​ <code>.htm</code>​</p>
+</li>
+<li><p>AddType application&#x2F;x-httpd-php .php .html .htm</p>
+</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h5 id="htaccess解析"><a href="#htaccess解析" class="headerlink" title=".htaccess解析"></a>.htaccess解析</h5><p>什么是.htaccess?</p>
+<p>前提条件：Apache开启.htaccess文件功能</p>
+<p>开启方式：</p>
+<ul>
+<li><p>路径：Apache24\conf\httpd.conf</p>
+</li>
+<li><p>文件：httpd.conf</p>
+</li>
+<li><p>位置1：如下代码↓</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs conf">&lt;Directory &quot;$&#123;SRVROOT&#125;/htdocs&quot;&gt; <br>    Options Indexes FollowSymLinks<br>  <br>    AllowOverride None (将None改为ALL)<br>  <br>    Require all granted<br>&lt;/Directory&gt;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>位置2: 去掉注释</p>
+</li>
+<li><p><code>#LoadModule rewrite_module modules/mod_rewrite.so</code>​</p>
+</li>
+</ul>
+<p>实际操作:</p>
+<ol>
+<li><p>web站点架构为:php+apache , 保证文件上传到本地 , apache开启对.htaccess支持；</p>
+</li>
+<li><p>黑名单没有过滤.htaccess;</p>
+</li>
+<li><p>编辑.htaccess文件,写入</p>
+</li>
+</ol>
+<blockquote>
+<p>&#x2F;&#x2F;1.这将把目录下的shell.jpg的文件当做可执行的php脚本进行解析并执行。[优先]<br>&lt;FilesMatch “shell.jpg”&gt;<br>  SetHandler application&#x2F;x-httpd-php<br></FilesMatch></p>
+<p>&#x2F;&#x2F;2.上传后缀为.aaa的文件，让其做为php类型文件进行解析<br>AddType application&#x2F;x-httpd-php .aaa</p>
+</blockquote>
+<ol start="4">
+<li><p>上传一句话木马并以.jpg结尾, 写入 <?php @eval($_POST['pass']);?></p>
+</li>
+<li><p>菜刀或蚁剑连接,完成!</p>
+</li>
+</ol>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/whatiwhere/article/details/84453810">警惕htaccess文件上传解析漏洞_.htaccess重写文件解析绕过-CSDN博客</a></p>
+<p>‍</p>
+<h5 id="大小写绕过"><a href="#大小写绕过" class="headerlink" title="大小写绕过"></a>大小写绕过</h5><p>背景原因:</p>
+<blockquote>
+<p>后缀名黑名单过滤不全面导致!</p>
+<p>虽然设置了黑名单对常见的后缀进行过滤，但并未对后缀名大小写进行统一。可以利用大小写进行绕过。例如：.phP</p>
+</blockquote>
+<p>示例:</p>
+<ol>
+<li>代码只对后缀名为.php的文件进行了拦截,并未对.pHp后缀名的文件拦截</li>
+<li>上传后缀名为.pHp的文件</li>
+</ol>
+<p>‍</p>
+<h5 id="点绕过"><a href="#点绕过" class="headerlink" title="点绕过"></a>点绕过</h5><p>背景原因:(windows特性)</p>
+<ul>
+<li><p>Windows 系统下，文件后缀名最后一个点会被自动去除。</p>
+</li>
+<li><p>Linux 系统下，文件后缀名最后一个点不会被自动去除。</p>
+</li>
+</ul>
+<p>利用 BurpSuite 工具截断 HTTP 请求，上传文件后缀名加 . 绕过上传。</p>
+<p>‍</p>
+<p>使用条件:</p>
+<ul>
+<li>只能在Windows系统下方能生效;</li>
+</ul>
+<p>‍</p>
+<p>利用示例:</p>
+<ul>
+<li>demo.php.【demo(点)php(点)】</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h5 id="空格绕过"><a href="#空格绕过" class="headerlink" title="空格绕过"></a>空格绕过</h5><p>背景原因:(windows特性)</p>
+<ul>
+<li><p>Windows系统下，对于文件名中空格【demo.php(空格)】会被作为空处理，程序中的检测代码却不能自动删除空格，从而绕过黑名单。</p>
+</li>
+<li><p>解释： 文件上传功能过滤不完善，没有考虑到空格的情况，将文件【demo.php(空格)】认为是以（空格）结尾的特殊文件，允许上传，当文件成功上传到windows系统下时，因为Windows系统特性会被作为空处理，也就是删除文件最后的空格，结果为【demo.php】</p>
+</li>
+</ul>
+<p>‍</p>
+<p>利用示例:</p>
+<p>通过BurpSuite截断 HTTP 请求之后，在对应的文件后缀名处添加空格。<br>点绕过和空格绕过结合示例如下：↓</p>
+<blockquote>
+<p>例如:<br>    a.php[空格](点)[空格]<br>    a.php .<br>    a.php(点)[空格](点)<br>Windows下：<br>    a.php</p>
+</blockquote>
+<blockquote>
+<p>a.php(点)+空格+(点)</p>
+<p>deldot删除最后一个点之后，不再进行删除，trim删除空格，那么最终上传的文件名为1.php.<br>利用Windows自动去除最后一个点，导致成功上传1.php；</p>
+</blockquote>
+<p>‍</p>
+<p>‍</p>
+<h5 id="DATA绕过"><a href="#DATA绕过" class="headerlink" title="::$DATA绕过"></a>::$DATA绕过</h5><p>背景原因:(windows特性)</p>
+<ul>
+<li><p>在window系统下，如果上传的文件名为<code>a.php::$DATA</code>​，它会在服务器上生成一个<code>a.php</code>​的文件，其中内容和所上传内容相同，并被解析。</p>
+</li>
+<li><p>例如:<code>phpinfo.php::$DATA</code>​Windows会自动去掉末尾的::$DATA变成<code>phpinfo.php</code>​</p>
+</li>
+</ul>
+<p>‍</p>
+<p>利用示例:</p>
+<ul>
+<li>通过BurpSuite截断 HTTP 请求之后，在对应的文件后缀名处添加::$DATA。</li>
+</ul>
+<blockquote>
+<p>a.php::$DATA</p>
+</blockquote>
+<p>特别说明：</p>
+<blockquote>
+<p>在windows下，无法直接测试::$DATA，因为windows不允许后缀名中存在特殊字符；</p>
+</blockquote>
+<p>‍</p>
+<p>‍</p>
+<h5 id="双写后缀名绕过"><a href="#双写后缀名绕过" class="headerlink" title="双写后缀名绕过"></a>双写后缀名绕过</h5><p>背景原因：</p>
+<ul>
+<li><p>文件上传过滤代码，会将文件名称进行敏感字符清除。</p>
+</li>
+<li><p>文件上传过滤代码，后缀名黑名单过滤不全面导致!</p>
+</li>
+<li><p>例如：如果上传的代码后缀名为.php，那么就将后缀名舍弃；如：a.php——&gt;a；</p>
+</li>
+</ul>
+<p>‍</p>
+<p>利用示例:</p>
+<ul>
+<li><p>对要上传的文件添加重复后缀名，如：a.php——&gt;a.pphphp</p>
+</li>
+<li><p>过滤掉php后，会重新拼接为新的php</p>
+</li>
+</ul>
+<p>‍</p>
+<p>防御措施:</p>
+<p>使用递归循环过滤，不使用一次过滤</p>
+<p>‍</p>
+<h3 id="白名单过滤"><a href="#白名单过滤" class="headerlink" title="白名单过滤"></a>白名单过滤</h3><h4 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h4><blockquote>
+<p>基于白名单验证：只针对白名单中有的后缀名，文件才能上传成功。</p>
+</blockquote>
+<h4 id="绕过方法-2"><a href="#绕过方法-2" class="headerlink" title="绕过方法"></a>绕过方法</h4><h5 id="MIME绕过"><a href="#MIME绕过" class="headerlink" title="MIME绕过"></a>MIME绕过</h5><p>MIME绕过，又叫HTTP请求头中的Content-Type属性绕过;【Response 、Request Headers都存在】</p>
+<blockquote>
+<p>MIME(（Multipurpose Internet Mail Extensions）多用途互联网邮件扩展类型。是设定某种扩展名的文件用一种应用程序来打开的方式类型，当该扩展名文件被访问的时候，浏览器会自动使用指定应用程序来打开。多用于指定一些客户端自定义的文件名，以及一些媒体文件打开方式每个MIME类型由两部分组成，前面是数据的大类别，例如声音 audio、图象 Image等,后面定义具体的种类。</p>
+</blockquote>
+<p>什么是Content-Type</p>
+<p>要知道什么是Content-Type，首先要了解什么是Internet Media Type。Internet Media Type即互联网媒体类型，也叫做MIME类型，使用两部分标识符来确定一个类型。在HTTP协议消息头中，使用Content-Type来表示具体请求中的媒体类型信息，意思就是说，<strong>Content-Type是Internet Media Type（MIME类型）在HTTP协议中的别称。</strong></p>
+<p>Content-Type的格式</p>
+<blockquote>
+<p>type&#x2F;subtype(;parameter)? type</p>
+<p>上面是Content-Type的格式，可以拆解为三个部分，分别是主类型（type）、子类型（subtype）和参数（parameter）。</p>
+<p>‍</p>
+<p>主类型（type）</p>
+<p>主类型可以是任意的字符串，比如text。如果是*号则代表所有类型。</p>
+<p>‍</p>
+<p>&#x2F;子类型（subtype）</p>
+<p>子类型可以是任意的字符串，比如html。如果是*号则代表所有类型。</p>
+<p>‍</p>
+<p>;参数（parameter）</p>
+<p>参数是可选的，可以在Content-Type中加入一些特殊的参数，比如Accept请求头的参数，常见的有用于设置字符编码的charset参数。</p>
+<p>Content-Type:  <em>&#x2F;</em> ;q&#x3D;0.8,   text&#x2F;html;charset:utf-8;</p>
+</blockquote>
+<p>‍</p>
+<p>‍</p>
+<h6 id="Content-Type中常见的媒体格式类型："><a href="#Content-Type中常见的媒体格式类型：" class="headerlink" title="Content-Type中常见的媒体格式类型："></a>Content-Type中常见的媒体格式类型：</h6><p>以text开头的媒体格式类型：</p>
+<ul>
+<li><p>text&#x2F;html： HTML格式。</p>
+</li>
+<li><p>text&#x2F;plain：纯文本格式。</p>
+</li>
+<li><p>text&#x2F;xml： XML格式。</p>
+</li>
+</ul>
+<p>‍</p>
+<p>以image开头的媒体格式类型：</p>
+<ul>
+<li><p>image&#x2F;gif：gif图片格式。</p>
+</li>
+<li><p>image&#x2F;jpeg：jpg图片格式。</p>
+</li>
+<li><p>image&#x2F;png：png图片格式。</p>
+</li>
+</ul>
+<p>‍</p>
+<p>以application开头的媒体格式类型：</p>
+<ul>
+<li><p>application&#x2F;xhtml+xml：XHTML格式。</p>
+</li>
+<li><p>application&#x2F;xml： XML数据格式。</p>
+</li>
+<li><p>application&#x2F;atom+xml：Atom XML聚合格式 。</p>
+</li>
+<li><p>application&#x2F;json： JSON数据格式。</p>
+</li>
+<li><p>application&#x2F;pdf：pdf格式 。</p>
+</li>
+<li><p>application&#x2F;msword： Word文档格式。</p>
+</li>
+<li><p>application&#x2F;octet-stream： 二进制流数据（如常见的文件下载）。</p>
+</li>
+<li><p>application&#x2F;x-www-form-urlencoded： 中默认的encType，form表单数据被编码为key&#x2F;value格式发送到服务器（表单默认的提交数据的格式）。</p>
+</li>
+</ul>
+<p>‍</p>
+<p>另外还有一种常见的媒体格式是上传文件之时使用的：</p>
+<p>multipart&#x2F;form-data ： 需要在表单中进行文件上传时，就需要使用该格式。<br>以上就是我们在日常的开发中，经常会用到的若干Content-Type的内容格式。</p>
+<p>‍</p>
+<p>MIME拦截代码样例:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-meta">@Controller</span> <br><span class="hljs-meta">@RequestMapping(value = <span class="hljs-string">&quot;/users&quot;</span>, method = RequestMethod.POST, consumes=<span class="hljs-string">&quot;image/*&quot;</span>)</span> <br><span class="hljs-meta">@ResponseBody</span><br><span class="hljs-keyword">public</span> List&lt;User&gt; addUser(<span class="hljs-meta">@RequestBody</span> User userl) &#123;   <br>    <span class="hljs-keyword">return</span> List&lt;User&gt; users;<br>&#125;<br><span class="hljs-comment">//consumes：指定处理请求的提交内容类型（Content-Type），例如application/json、text/html;等。如果不是指定的类型不响应；</span><br><span class="hljs-comment">//上面这个方法【仅处理】请求Content-Type为【image/*】类型的请求。</span><br></code></pre></td></tr></table></figure>
+
+
+<p>MIME利用示例：</p>
+<ul>
+<li><p>通过抓包的形式，修改Content-Type类型，将类型指定为：image&#x2F;*</p>
+</li>
+<li><p>Content-Type类型位于HTTP Request 中，要以网站为中心，request表示获取数据，response表示返回数据；</p>
+</li>
+</ul>
+<p>‍</p>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yanggb/p/11684494.html">http请求头中的content-type属性 - yanggb - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/shamo89/p/10151968.html">HTTP报文头Accept和Content-Type总结 - 夏威夷8080 - 博客园 (cnblogs.com)</a></p>
+<p>‍</p>
+<h5 id="00截断"><a href="#00截断" class="headerlink" title="%00截断"></a>%00截断</h5><p> %00跟随url发送到服务器后被服务器解码，这时还没有传到验证函数，也就是说验证函数里接收到的不是%00字符，而是 <strong>%00解码后的内容，即解码成了0x00</strong>。总之就是 <strong>%00被服务器解码为0x00发挥了截断作用</strong>。</p>
+<p>‍</p>
+<p>00截断的核心：</p>
+<p>当一个字符串中存在空字符的时候，在被解析的时候会导致空字符后面的字符被丢弃。</p>
+<p>‍</p>
+<p>00截断原理：</p>
+<blockquote>
+<ul>
+<li><p>其实截断的原理也很简单，无论0x00还是%00，最终被解析后都是一个东西:chr（0）</p>
+</li>
+<li><p>chr()是一个函数，这个函数是用来返回参数所对应的字符的，也就是说，参数是一个ASCII码，返回的值是一个字符，类型为string。</p>
+</li>
+<li><p>那么chr(0)就很好理解了，对照ASCII码表可以知道，ASCII码为0-127的数字，每个数字对应一个字符，而0对应的就是NUT字符（NULL），也就是空字符，而截断的关键就是这个空字符，当一个字符串中存在空字符的时候，在被解析的时候会导致空字符后面的字符被丢弃。</p>
+</li>
+<li><p>‍</p>
+</li>
+<li><p>那么就可以知道00截断的原理了，在后缀中插入一个空字符（不是空格），会导致之后的部分被丢弃，而导致绕过的发生。</p>
+<p>如：在文件1.php.jpg中插入空字符变成：1.php.0x00.jpg中，解析后就会只剩下1.php，而空字符怎么插入的呢？  </p>
+<p>通常我们会用Burp抓包后，在文件名插入一个空格，然后再HEX中找到空格对应的16进制编码“20”，把它改成00（即16进制ASCII码00，对应十进制的0），就可以插入空字符了</p>
+</li>
+</ul>
+</blockquote>
+<p>这种情况常出现在ASP程序中，PHP 版本&lt;5.3.4时也会有这个情况，JSP中也会出现。</p>
+<ul>
+<li>php版本要小于5.3.4；	5.3.4及以上已经修复该问题</li>
+<li>magic_quotes_gpc需要为OFF状态</li>
+</ul>
+<p>‍</p>
+<p>下面是用 URL 编码形式表示的 ASCII 字符：</p>
+<table>
+<thead>
+<tr>
+<th align="center">URL-encode</th>
+<th align="center">ASCII VALUE</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">%00</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<p>重点：<strong>在url中%00表示ASCII码中的0</strong> ，而<strong>ascii中0作为特殊字符保留</strong>，表示字符串结束，所以当url中出现%00时就会认为读取已结束。</p>
+<p>‍</p>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th align="center">URL</th>
+<th align="center">输出内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><a target="_blank" rel="noopener" href="https://mp.csdn.net/upfiles/?filename=test.txt">https://mp.csdn.net/upfiles/?filename=test.txt</a></td>
+<td align="center">此时输出的是：test.txt</td>
+</tr>
+<tr>
+<td align="center">加上 <strong>%00</strong>后——&gt;&gt;</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"><a target="_blank" rel="noopener" href="https://mp.csdn.net/upfiles/?filename=test.php%00.txt">https://mp.csdn.net/upfiles/?filename=test.php%00.txt</a></td>
+<td align="center">此时输出的是：test.php</td>
+</tr>
+</tbody></table>
+<p>就绕过了后缀限制，可以上传webshell啦。</p>
+<p>‍</p>
+<p>利用示例：</p>
+<h6 id="一、前端使用-00截断"><a href="#一、前端使用-00截断" class="headerlink" title="一、前端使用%00截断"></a>一、前端使用%00截断</h6><p>打开BurpSuite抓包工具，找到上传文件后缀名位置；</p>
+<ul>
+<li><p><strong>%00截断百分之百绕过前端校验；</strong> 例如：a.php%00.jpg</p>
+<ol>
+<li><p>在上传文件后缀名处，直接用 %00 就可以了。示例：a.php%00.jpg</p>
+</li>
+<li><p>某些情况下，直接在文件名中加 %00 进行截断不生效无法起到相应的作用，因为 %00 会以字符串的形式解析了。(不认为是空(NULL)字符，认为只是普通拼接的字符串)；</p>
+</li>
+<li><p>解决方法如下：</p>
+<ol>
+<li>是我们需要对 %00 做一个URL解码，也就是URL-decode；（在BurpSuite内选中%00右键convent selection——&gt;URL——&gt;URL-decode）</li>
+<li>通过 burpsuite 修改 hex 值为 00 （URL decode）进行截断；</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>为什么两者用法不同？</p>
+</li>
+</ul>
+<p>这是因为  <strong>%00 截断在 GET 中被 url 解码之后是空字符</strong>。但是<strong>在 POST 中 %00 不会被 url 解码</strong>，所以只能通过 burpsuite 修改 hex 值为 00 （URL decode）进行截断。</p>
+<ul>
+<li>如果是存在后端校验；%00截断只能绕过前端校验，达不到预想结果；</li>
+</ul>
+<p>‍</p>
+<h6 id="二、后端使用-00路径截断"><a href="#二、后端使用-00路径截断" class="headerlink" title="二、后端使用%00路径截断"></a>二、后端使用%00路径截断</h6><p>（后端校验一般为后缀名，考虑%00截断文件路径）</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44840696/article/details/90581104">文件上传绕过之00截断_00截断绕过-CSDN博客</a></p>
+<p>‍</p>
+<p>‍</p>
+<h5 id="0x00截断"><a href="#0x00截断" class="headerlink" title="0x00截断"></a>0x00截断</h5><p>0x00是十六进制表示方法，表示ASCII码为0的字符，在一些函数处理时，会把这个字符当作结束符。</p>
+<p> 0x00可以用在对文件名的绕过上</p>
+<p>具体原理：系统在对文件名进行读取时，如果遇到0x00，就会认为读取已经结束。但要注意是文件的十六进制内容里的00，而不是文件名中的00。也就是说系统是按二进制或十六进制读取文件，遇到ASCII码为0的位置就停止，而这个ASCII码为0的位置在十六进制中是00。</p>
+<p>总之就是利用ASCII码为0这个特殊字符，让系统认为字符串已经结束。</p>
+<p>‍</p>
+<h5 id="0x0a截断"><a href="#0x0a截断" class="headerlink" title="0x0a截断"></a>0x0a截断</h5><p> 0x0a是十六进制表示方法，表示ASCII码为&#x2F;n的换行字符，具体为换行至下一行行首起始位置。</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="文件头"><a href="#文件头" class="headerlink" title="文件头"></a>文件头</h2><h3 id="原理-3"><a href="#原理-3" class="headerlink" title="原理"></a>原理</h3><p><strong>文件头检查</strong>是指当浏览器上传到服务器的时候，白名单进行的文件头检测，符合，则允许上传，否则不允许上传</p>
+<p>‍</p>
+<p><strong>常见文件头：</strong></p>
+<p>JPEG (jpg)，文件头：FFD8FF<br>PNG (png)，文件头：89504E47<br>GIF (gif)，文件头：47494638<br>XML (xml)，文件头：3C3F786D6C<br>ZIP Archive (zip)，文件头：504B0304</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/xiangshangbashaonian/article/details/80156865">【CTF杂项】常见文件文件头文件尾格式总结及各类文件头_ctf常见文件头-CSDN博客</a></p>
+<h3 id="绕过方法-3"><a href="#绕过方法-3" class="headerlink" title="绕过方法"></a>绕过方法</h3><p>文件头利用示例：</p>
+<p>方法一：</p>
+<p>先将一句话木马写入txt文件，改文件后缀为png格式；<br>用winhex打开，找到你所改成图片的文件头（例如我想改成的是png格式，也可以jpg等，png图片的格式头是89504E47），只要将其放在文件头部（也就是放在一句话的前面）,保存即可。<br>上传，用bp抓包，然后修改文件后缀为.php格式，放包即可，用蚁剑连接即可。</p>
+<p>‍</p>
+<p>方法二：</p>
+<ol>
+<li><p>准备一个要上传的图片；一个一句话木马.php</p>
+</li>
+<li><p>执行命令（命令行）：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">CSDN.png 为要上传的图片【必须加/b】；<br><br>1.php 为一句话木马【必须加/a】；<br><br>phpinfo 为重新定义的文件名；<br><br>copy CSDN.png/b+1.php/a phpinfo.png<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>上传图片！</p>
+</li>
+<li><p>使用工具连接</p>
+</li>
+</ol>
+<p>‍</p>
+<p>方法三：</p>
+<ol>
+<li>BurpSuite抓包上传文件时，部分上传功能代码会展示文件流输出</li>
+<li>直接在文件流的最前方，添加文件头（png格式文件头，jpg格式文件头）</li>
+</ol>
+<p>‍</p>
+<p>方法四：</p>
+<p>doc、pdf、excel文件头木马写入</p>
+<ol>
+<li><p>准备word文档.doc + .exe木马文件</p>
+</li>
+<li><p>执行命令</p>
+<p> copy CSDN.doc&#x2F;b + 1.exe&#x2F;a phpinfo.doc</p>
+</li>
+<li><p>发送给朋友</p>
+</li>
+</ol>
+<p>‍</p>
+<h2 id="二次渲染"><a href="#二次渲染" class="headerlink" title="二次渲染"></a>二次渲染</h2><h3 id="原理-4"><a href="#原理-4" class="headerlink" title="原理"></a>原理</h3><p>二次渲染产生的原因</p>
+<ol>
+<li>处于安全方面的考虑，不信任用户输入、上传的任何数据、图片；</li>
+<li>因此，对于用户上传的图片等信息，都需要开发人员对图片文件重新生成！；</li>
+<li>这就是防止图片中参杂恶意代码的防御措施；（即，对图片文件流，只保留可以生成图片的最基本部分，其他地方舍弃！）</li>
+</ol>
+<p>‍</p>
+<p>二次渲染意义：</p>
+<p>二次渲染过滤掉图片中掺杂的恶意代码</p>
+<p>‍</p>
+<h3 id="绕过方法-4"><a href="#绕过方法-4" class="headerlink" title="绕过方法"></a>绕过方法</h3><ol>
+<li>下载经过二次渲染后的图片，使用010editor与原图进行比较</li>
+<li>在与原图二进制相同的地方插入一句话木马，并上传</li>
+<li>结合文件包含漏洞利用</li>
+</ol>
+<p>‍</p>
+<h2 id="条件竞争"><a href="#条件竞争" class="headerlink" title="条件竞争"></a>条件竞争</h2><h3 id="原理-5"><a href="#原理-5" class="headerlink" title="原理"></a>原理</h3><p>代码逻辑出问题，采用先上传再检验</p>
+<p><strong>先将文件上传到服务器中</strong>，<strong>再判断文件后缀是否在白名单里面</strong>。如果在则重命名，否则删除。</p>
+<h3 id="绕过方法-5"><a href="#绕过方法-5" class="headerlink" title="绕过方法"></a>绕过方法</h3><ol>
+<li><p>创建新的木马文件，其中代码为<code>&lt;?php fputs(fopen(&#39;xiao.php&#39;,&#39;w&#39;),&#39;&lt;?php eval($_REQUEST[1]);?&gt;&#39;);?&gt;</code>​</p>
+<p> <img src="/assets/image-20240731195231-8ng4pqc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>首先刷新想要获取的木马文件路径 <strong>（请求页面）<a target="_blank" rel="noopener" href="http://192.168.88.142:30010/upload/xiao.php">http://192.168.88.142:30010/upload/xiao.php</a></strong>。通过抓包抓取到请求页面，并将此数据包发送至Intruder，此时这个页面不要关闭</p>
+<p> <img src="/assets/image-20240731195428-k4l08wt.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>选中Payloads→Payloads Sets→Payload type:Null payloads（负载类型：空负载）</p>
+<p> <img src="/assets/image-20240731195530-o4u1wiu.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>Payload Options →Continue indefinitely（无限继续）,并start attack</p>
+<p> <img src="/assets/image-20240731195604-9kvqfuk.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>将设置好的木马文件上传，抓包并发送至Intruder，记得clear $同样设置无限发包</p>
+<p> <img src="/assets/image-20240731195741-vk5ziaw.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>此时不要放包，不断刷新访问<strong><a target="_blank" rel="noopener" href="http://192.168.88.142:30010/upload/xiao.php%EF%BC%8C%E7%82%B9%E5%A4%9A%E5%87%A0%E6%AC%A1%E4%B9%8B%E5%90%8E%E5%86%8D%E6%94%BE%E5%8C%85%E6%9F%A5%E7%9C%8B">http://192.168.88.142:30010/upload/xiao.php，点多几次之后再放包查看</a></strong></p>
+<p> <img src="/assets/image-20240731200749-4atd06b.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<h1 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h1><ol>
+<li><p>上传文件是Web脚本语言时，服务器的Web容器解释并执行了用户上传的脚本，导致代码执行。</p>
+</li>
+<li><p>上传文件是病毒或者木马时，主要用于诱骗用户或者管理员下载执行或者直接自动运行；</p>
+</li>
+<li><p>上传文件是Flash的策略文件crossdomain.xml，黑客用以控制Flash在该域下的行为(其他通过类似方式控制策略文件的情况类似);</p>
+</li>
+<li><p>上传文件是病毒、木马文件，黑客用以诱骗用户或者管理员下载执行。</p>
+</li>
+<li><p>上传文件是钓鱼图片或为包含了脚本的图片，在某些版本的浏览器中会被作为脚本执行，被用于钓鱼和欺诈。</p>
+<p> 除此之外，还有一些不常见的利用方法，比如将上传文件作为一个入口，溢出服务器的后台处理程序，如图片解析模块;或者上传一个合法的文本文件，其内容包含了PHP脚本，再通过”本地文件包含漏洞(Local File Include)”执行此脚本;等等。</p>
+</li>
+</ol>
+<h1 id="如何防御"><a href="#如何防御" class="headerlink" title="如何防御"></a>如何防御</h1><h1 id="环境复现"><a href="#环境复现" class="headerlink" title="环境复现"></a>环境复现</h1><p>‍</p>
+<p>‍</p>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/WEB%E6%94%BB%E9%98%B2/" class="print-no-link">#WEB攻防</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" class="print-no-link">#文件上传漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>文件上传漏洞</div>
+      <div>http://example.com/2024/03/26/文件上传漏洞📡/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>0z-sIHN</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月26日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/03/26/XXE%E6%BC%8F%E6%B4%9E%F0%9F%A6%8B/" title="XXE漏洞🦋">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">XXE漏洞🦋</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/26/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%F0%9F%92%BC/" title="文件包含漏洞💼">
+                        <span class="hidden-mobile">文件包含漏洞💼</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"Ov23liT0OJSQBYUz81HU","clientSecret":"02c5c39d96d158a8a34967805e40cb90a7b2f1cf","repo":"0z-sihn.github.io","owner":"0z-sIHN","admin":["0z-sIHN"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '6411e0e2414fc67f918ceae66fcfeca7'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+<div>
+  <span id="timeDate">正在载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("11/10/2024 22:36:00");
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀已持续航行&nbsp"+dnum+"&nbsp天";  
+      document.getElementById("times").innerHTML = hnum + "&nbsp时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()",250);
+  </script>
+</div>
+
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/diy_js/typing-effect.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

